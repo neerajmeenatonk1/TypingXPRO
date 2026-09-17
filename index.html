@@ -1,0 +1,4045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypingX PRO — Precision in Every Keystroke</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --typing-size: 1.35rem;
+    --typing-line-height: 1.55;
+    --ui-font: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, 'Noto Sans Devanagari', 'Mangal', sans-serif;
+    --primary: #1e40af;
+    --primary-hover: #1e3a8a;
+    --primary-light: #eff6ff;
+    --primary-border: #bfdbfe;
+    --text: #0f172a;
+    --text-2: #475569;
+    --text-3: #94a3b8;
+    --surface: #ffffff;
+    --surface-2: #f8fafc;
+    --surface-3: #f1f5f9;
+    --border: #cbd5e1;
+    --border-2: #e2e8f0;
+    --success: #15803d;
+    --success-hover: #166534;
+    --success-light: #f0fdf4;
+    --success-border: #86efac;
+    --danger: #b91c1c;
+    --danger-hover: #991b1b;
+    --danger-light: #fef2f2;
+    --danger-border: #fecaca;
+    --gold: #fef08a;
+    --focus-grey: #64748b;
+  }
+
+  html {
+    font-size: clamp(15px, 0.95vmin + 0.4vw, 19px);
+    height: 100%;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  body {
+    min-height: 100%;
+    font-family: var(--ui-font);
+    background: var(--surface-2);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  button, input, textarea, select { font-family: var(--ui-font); }
+  ::placeholder { font-family: var(--ui-font); }
+
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
+
+  input, textarea, select { outline: none; }
+  input:focus, textarea:focus, select:focus,
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: none !important;
+    box-shadow: none;
+  }
+
+  @keyframes proColor {
+    0%, 100% { color: #fef08a; }
+    20%      { color: #86efac; }
+    40%      { color: #ffffff; }
+    60%      { color: #f9a8d4; }
+    80%      { color: #fdba74; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gov-logo-text h1 .pro { animation: none; color: #fef08a; }
+  }
+
+  .gov-header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: var(--primary);
+    color: #ffffff;
+    padding: 0.75rem 0;
+    border-bottom: 3px solid #172554;
+    flex: 0 0 auto;
+  }
+  .gov-header-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 2.2vmin, 2rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .gov-logo-text h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: #ffffff;
+  }
+  .gov-logo-text h1 .pro {
+    font-weight: 700;
+    color: #fef08a;
+    display: inline-block;
+    animation: proColor 7s ease-in-out infinite;
+  }
+  .gov-logo-text .sub {
+    font-size: 0.7rem;
+    color: #bfdbfe;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.15rem;
+    font-weight: 500;
+  }
+  .gov-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tg-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    height: 2.35rem;
+    padding: 0 0.95rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(191, 219, 254, 0.45);
+    border-radius: 4px;
+    transition: background 0.18s, border-color 0.18s, transform 0.15s;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .tg-link:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: #ffffff;
+    color: #ffffff;
+  }
+  .tg-link:active { transform: translateY(1px); }
+  .tg-link svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    fill: currentColor;
+    flex: 0 0 auto;
+  }
+
+  .admin-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(191, 219, 254, 0.45);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, transform 0.15s;
+    padding: 0;
+    flex: 0 0 auto;
+  }
+  .admin-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: #ffffff;
+  }
+  .admin-icon-btn:active { transform: translateY(1px); }
+  .admin-icon-btn svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .page { display: none; flex: 1 1 auto; flex-direction: column; min-height: 0; }
+  .page.active { display: flex; }
+
+  .back-bar {
+    max-width: 1320px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.85rem clamp(1rem, 2.2vmin, 2rem) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--ui-font);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .back-btn:hover { background: var(--primary-light); border-color: var(--primary-border); }
+
+  .logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--ui-font);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--danger);
+    background: #ffffff;
+    border: 1px solid var(--danger-border);
+    padding: 0.5rem 0.9rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .logout-btn:hover {
+    background: var(--danger);
+    color: #ffffff;
+    border-color: var(--danger);
+  }
+  .logout-btn svg { width: 0.9rem; height: 0.9rem; }
+
+  .gov-main {
+    flex: 1 1 auto;
+    max-width: 1320px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.5rem clamp(1rem, 2.2vmin, 2rem) 2rem;
+  }
+  .gov-main.home-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .gov-page-title { margin-bottom: 1.2rem; text-align: center; }
+  .gov-page-title h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.015em;
+  }
+  .gov-page-title p {
+    font-size: 0.88rem;
+    color: var(--text-2);
+    margin-top: 0.35rem;
+  }
+
+  .gov-card {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 4px;
+    padding: 1.3rem 1.5rem;
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+  .gov-card.wide { max-width: 100%; }
+  .gov-section { margin-bottom: 1.2rem; }
+  .gov-section:last-child { margin-bottom: 0; }
+  .gov-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.85rem;
+    border-bottom: 2px solid var(--primary-light);
+  }
+  .gov-section-title .num {
+    width: 1.4rem;
+    height: 1.4rem;
+    background: var(--primary);
+    color: #ffffff;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex: 0 0 auto;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+  .form-group:last-child { margin-bottom: 0; }
+  .form-label {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .form-label .required { color: var(--danger); margin-left: 0.15rem; }
+  .form-hint { font-size: 0.75rem; color: var(--text-3); }
+  .form-input, .form-select, .form-textarea {
+    font-family: var(--ui-font);
+    font-size: 0.92rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--focus-grey);
+    outline: none;
+    box-shadow: none;
+  }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-3); }
+  .form-textarea {
+    resize: vertical;
+    min-height: 6.5rem;
+    line-height: 1.55;
+  }
+  .form-textarea.xxl {
+    font-size: 1.35rem;
+    line-height: 1.6;
+    min-height: 12rem;
+  }
+  .form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.4rem;
+    cursor: pointer;
+  }
+  .form-select:hover { border-color: var(--focus-grey); }
+  .input-with-btn { display: flex; gap: 0.45rem; }
+  .input-with-btn .form-input { flex: 1; min-width: 0; }
+
+  .word-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--text-2);
+    padding: 0.4rem 0.1rem;
+    font-weight: 500;
+  }
+  .word-counter strong {
+    color: var(--primary);
+    font-weight: 700;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  .btn {
+    font-family: var(--ui-font);
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.62rem 1.15rem;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+  }
+  .btn-primary:hover:not(:disabled) { background: var(--primary-hover); border-color: var(--primary-hover); }
+  .btn-primary:disabled {
+    background: var(--border);
+    color: var(--text-3);
+    border-color: var(--border);
+    cursor: not-allowed;
+  }
+  .btn-outline {
+    background: #ffffff;
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+  .btn-outline:hover:not(:disabled) { background: var(--primary-light); }
+  .btn-danger-outline {
+    background: #ffffff;
+    color: var(--danger);
+    border-color: var(--danger-border);
+  }
+  .btn-danger-outline:hover { background: var(--danger-light); }
+  .btn-danger {
+    background: var(--danger);
+    color: #ffffff;
+    border-color: var(--danger);
+  }
+  .btn-danger:hover:not(:disabled) { background: var(--danger-hover); border-color: var(--danger-hover); }
+  .btn-success {
+    background: var(--success);
+    color: #ffffff;
+    border-color: var(--success);
+  }
+  .btn-success:hover:not(:disabled) { background: var(--success-hover); border-color: var(--success-hover); }
+  .btn-block { width: 100%; }
+  .btn-sm { font-size: 0.78rem; padding: 0.38rem 0.75rem; }
+  .btn-lg { font-size: 0.95rem; padding: 0.75rem 1.5rem; }
+
+  .free-test-btn-wrap {
+    margin-top: 1.3rem;
+    padding-top: 1.3rem;
+    border-top: 1px dashed var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .free-test-hint {
+    font-size: 0.78rem;
+    color: var(--text-3);
+    font-weight: 500;
+    text-align: center;
+  }
+  .free-test-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: 100%;
+    font-family: var(--ui-font);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    border: 1px solid #15803d;
+    padding: 0.85rem 1.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 14px -4px rgba(21, 128, 61, 0.45);
+    transition: transform 0.15s, box-shadow 0.18s, background 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .free-test-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 60%);
+    pointer-events: none;
+  }
+  .free-test-btn:hover {
+    background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+    box-shadow: 0 6px 20px -4px rgba(21, 128, 61, 0.6);
+    transform: translateY(-1px);
+  }
+  .free-test-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px -3px rgba(21, 128, 61, 0.5);
+  }
+  .free-test-btn svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
+  }
+  .free-test-btn .arr {
+    transition: transform 0.18s;
+  }
+  .free-test-btn:hover .arr {
+    transform: translateX(3px);
+  }
+
+  .status-msg {
+    font-size: 0.8rem;
+    min-height: 1.15rem;
+    margin-top: 0.4rem;
+    line-height: 1.45;
+  }
+  .status-msg.ok  { color: var(--success); font-weight: 600; }
+  .status-msg.err { color: var(--danger); font-weight: 600; }
+
+  .verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.62rem 0.9rem;
+    background: var(--success-light);
+    border: 1px solid var(--success-border);
+    border-left: 4px solid var(--success);
+    color: var(--success);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    border-radius: 3px;
+  }
+  .verified-badge::before {
+    content: "✓";
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 50%;
+    background: var(--success);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    flex: 0 0 auto;
+  }
+
+  .id-result {
+    margin-top: 0.9rem;
+    padding: 0.85rem 1rem;
+    background: var(--success-light);
+    border: 1px solid var(--success-border);
+    border-left: 4px solid var(--success);
+    border-radius: 3px;
+    display: none;
+  }
+  .id-result.show { display: block; }
+  .id-result-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--success);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .id-result-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+  .id-result-value {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.12em;
+    flex: 1;
+    min-width: 9rem;
+  }
+  .copy-btn {
+    font-family: var(--ui-font);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--success);
+    background: #ffffff;
+    color: var(--success);
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .copy-btn:hover, .copy-btn.copied { background: var(--success); color: #ffffff; }
+  .copy-btn svg { width: 0.85rem; height: 0.85rem; }
+
+  .lang-grid { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+  .lang-tick {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.95rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text);
+    user-select: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .lang-tick:hover { border-color: var(--primary); background: var(--surface-2); }
+  .lang-tick input { display: none; }
+  .lang-tick .check-box {
+    width: 1.05rem;
+    height: 1.05rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: 0 0 auto;
+  }
+  .lang-tick .check-box::after {
+    content: "";
+    width: 0.28rem;
+    height: 0.5rem;
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-0.05rem, -0.08rem);
+    opacity: 0;
+  }
+  .lang-tick input:checked + .check-box { background: var(--primary); border-color: var(--primary); }
+  .lang-tick input:checked + .check-box::after { opacity: 1; }
+  .lang-tick:has(input:checked) {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .lang-tick.checked {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  /* ===== FOOTER (with icons + bullet dot) ===== */
+  .gov-footer {
+    background: var(--primary);
+    color: #bfdbfe;
+    padding: 0.9rem 1.5rem;
+    font-size: 0.8rem;
+    text-align: center;
+    border-top: 3px solid #172554;
+    flex: 0 0 auto;
+    margin-top: auto;
+  }
+  .footer-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem 1.1rem;
+    flex-wrap: wrap;
+    line-height: 1.5;
+  }
+  .footer-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #bfdbfe;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .footer-item strong {
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .footer-item svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
+  }
+  .footer-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-bottom: 1px dashed rgba(191, 219, 254, 0.55);
+    padding-bottom: 1px;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .footer-contact:hover {
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+  }
+  .footer-contact svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
+  }
+  .footer-sep {
+    color: #93c5fd;
+    font-weight: 400;
+    user-select: none;
+  }
+  @media (max-width: 600px) {
+    .footer-inner { gap: 0.35rem 0.7rem; font-size: 0.74rem; }
+    .footer-sep { display: none; }
+  }
+
+  .gov-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 4px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+  .gov-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    min-width: 34rem;
+  }
+  .gov-table thead th {
+    background: var(--surface-3);
+    color: var(--primary);
+    text-align: left;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  .gov-table tbody td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--border-2);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  .gov-table tbody tr:last-child td { border-bottom: none; }
+  .gov-table tbody tr:hover td { background: var(--surface-2); }
+  .gov-table .center { text-align: center; }
+  .gov-table .truncate {
+    max-width: 22rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gov-table .empty-row td {
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  .empty-state-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--surface-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-3);
+  }
+  .empty-state-icon svg { width: 1.75rem; height: 1.75rem; }
+  .empty-state-heading {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-2);
+    letter-spacing: -0.005em;
+  }
+  .empty-state-hint {
+    font-size: 0.82rem;
+    color: var(--text-3);
+    max-width: 22rem;
+    line-height: 1.5;
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 500;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: #ffffff;
+    border-radius: 4px;
+    padding: 1.4rem 1.5rem 1.3rem;
+    width: 100%;
+    max-width: 25rem;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.4);
+    border-top: 4px solid var(--primary);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal.danger { border-top-color: var(--danger); }
+  .modal.success { border-top-color: var(--success); }
+  .modal h2 {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--primary);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-2);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .modal.danger h2 { color: var(--danger); }
+  .modal h2 .icon-circle {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+  .modal h2 .icon-circle.warn { background: var(--danger-light); color: var(--danger); }
+  .modal h2 .icon-circle.info { background: var(--primary-light); color: var(--primary); }
+  .modal h2 .icon-circle.ok { background: var(--success-light); color: var(--success); }
+  .modal h2 .icon-circle svg { width: 1rem; height: 1rem; }
+  .modal .modal-sub {
+    font-size: 0.85rem;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .modal-actions { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+  .modal-actions .btn { flex: 1; }
+  .modal input:focus { border-color: var(--focus-grey); }
+
+  .result-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem clamp(1rem, 2.2vmin, 2rem) 1.5rem;
+  }
+  .result-wrap { max-width: 52rem; width: 100%; margin: 0 auto; }
+  .result-card {
+    background: #ffffff;
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px -22px rgba(15, 23, 42, 0.35);
+  }
+  .result-header {
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+    color: #ffffff;
+    padding: 1rem 1.35rem 1.15rem;
+    position: relative;
+  }
+  .result-header::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 3px;
+    background: linear-gradient(90deg, #fef08a, #86efac, #ffffff, #f9a8d4, #fdba74);
+    opacity: 0.55;
+  }
+  .result-badge {
+    display: block;
+    text-align: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #bfdbfe;
+    margin-bottom: 0.75rem;
+  }
+  .result-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+  .result-info-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 1.25rem;
+    min-width: 0;
+    flex: 1 1 0;
+    position: relative;
+  }
+  .result-info-cell + .result-info-cell::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 15%;
+    bottom: 15%;
+    width: 1px;
+    background: rgba(191, 219, 254, 0.3);
+  }
+  .result-info-cell .lbl {
+    font-size: 0.58rem;
+    color: #bfdbfe;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+  .result-info-cell .val {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .result-info-cell .val.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--gold);
+    font-size: 0.88rem;
+    letter-spacing: 0.14em;
+  }
+  .result-info-cell .val-marks {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .result-info-cell .val-marks small {
+    font-size: 0.9rem;
+    color: #bfdbfe;
+    font-weight: 500;
+    margin-left: 0.1rem;
+  }
+  .result-body { padding: 1.1rem 1.35rem 1.2rem; }
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.55rem;
+    margin-bottom: 1rem;
+  }
+  .result-stat {
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 6px;
+    padding: 0.65rem 0.4rem;
+    text-align: center;
+  }
+  .result-stat .num {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--primary);
+  }
+  .result-stat.correct .num { color: var(--success); }
+  .result-stat.wrong .num { color: var(--danger); }
+  .result-stat.skipped .num { color: var(--text-2); }
+  .result-stat .lbl {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-3);
+    margin-top: 0.2rem;
+  }
+  .result-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem 1.4rem;
+    padding: 0.9rem 0;
+    border-top: 1px dashed var(--border);
+    border-bottom: 1px dashed var(--border);
+  }
+  .result-details .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    min-width: 0;
+  }
+  .result-details .k {
+    color: var(--text-3);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .result-details .v {
+    color: var(--text);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-word;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .result-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+  .btn-review-action,
+  .btn-home-action {
+    flex: 1 1 12rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.72rem 1.1rem;
+    font-family: var(--ui-font);
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.18s, transform 0.15s, box-shadow 0.18s, color 0.18s, border-color 0.18s;
+  }
+  .btn-review-action {
+    color: var(--primary);
+    background: #ffffff;
+    border: 2px solid var(--primary);
+  }
+  .btn-review-action:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px -8px rgba(30, 64, 175, 0.5);
+  }
+  .btn-review-action:active { transform: translateY(1px); }
+  .btn-review-action svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
+  }
+  .btn-home-action {
+    color: #ffffff;
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+    border: 2px solid #1e40af;
+    box-shadow: 0 6px 16px -8px rgba(30, 64, 175, 0.6);
+  }
+  .btn-home-action:hover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px -8px rgba(30, 64, 175, 0.75);
+  }
+  .btn-home-action:active { transform: translateY(1px); }
+  .btn-home-action svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
+  }
+
+  .review-box {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 8px;
+    margin-top: 1rem;
+    overflow: hidden;
+    display: none;
+  }
+  .review-box.show { display: block; }
+  .review-box-header {
+    background: var(--surface-3);
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border-2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .review-legend {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.66rem;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  .review-legend .leg { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .review-legend .swatch {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .review-legend .swatch.correct { background: #cbd5e1; }
+  .review-legend .swatch.typed { background: var(--danger); }
+  .review-legend .swatch.fix { background: var(--success); }
+  .review-legend .swatch.skipped { background: var(--text-3); opacity: 0.5; }
+
+  .review-paragraph {
+    padding: 1rem 1.35rem;
+    line-height: 1.85;
+    font-size: 1.2rem;
+    color: var(--text);
+    white-space: pre-wrap;
+    overflow-wrap: normal;
+    word-break: normal;
+    overflow-x: hidden;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  .rw { display: inline; }
+  .rw-correct { color: var(--text); }
+  .rw-wrong { display: inline; white-space: nowrap; }
+  .rw-wrong .rw-typed {
+    color: var(--danger);
+    font-weight: 600;
+    background: rgba(185, 28, 28, 0.08);
+    padding: 0.05em 0.25em;
+    border-radius: 3px;
+  }
+  .rw-wrong .rw-arrow {
+    color: var(--text-3);
+    margin: 0 0.35em;
+    font-weight: 700;
+  }
+  .rw-wrong .rw-correct-word {
+    color: var(--success);
+    font-weight: 700;
+    background: rgba(21, 128, 61, 0.1);
+    padding: 0.05em 0.25em;
+    border-radius: 3px;
+  }
+  .rw-skipped {
+    color: var(--text-3);
+    font-style: italic;
+    background: rgba(148, 163, 184, 0.1);
+    padding: 0.05em 0.2em;
+    border-radius: 3px;
+  }
+
+  .admin-layout {
+    display: flex;
+    gap: 1.1rem;
+    align-items: flex-start;
+  }
+  .admin-nav {
+    flex: 0 0 13.5rem;
+    position: sticky;
+    top: 5rem;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: 4px;
+    padding: 0.5rem;
+  }
+  .admin-nav-title {
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: var(--text-3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.65rem 0.5rem;
+    border-bottom: 1px solid var(--border-2);
+    margin-bottom: 0.3rem;
+  }
+  .admin-nav-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-family: var(--ui-font);
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-2);
+    background: transparent;
+    border: none;
+    padding: 0.6rem 0.75rem;
+    border-radius: 3px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .admin-nav-item:hover { background: var(--surface-2); color: var(--text); }
+  .admin-nav-item.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-left-color: var(--primary);
+    font-weight: 600;
+  }
+  .admin-panels { flex: 1 1 auto; min-width: 0; }
+  .admin-panel { display: none; }
+  .admin-panel.active { display: block; }
+  .admin-panel-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 2px solid var(--primary-light);
+  }
+  .admin-panel-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .admin-panel-header p {
+    font-size: 0.82rem;
+    color: var(--text-2);
+    margin-top: 0.2rem;
+  }
+
+  #typingScreen {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: row;
+    overflow: hidden;
+    background: #ffffff;
+    z-index: 200;
+  }
+  #typingScreen.active { display: flex; }
+
+  .typing-sidebar {
+    flex: 0 0 12rem;
+    background: var(--surface-3);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0.85rem;
+    gap: 0.65rem;
+    align-items: center;
+    border-right: 1px solid var(--border-2);
+    overflow-y: auto;
+  }
+  .typing-avatar {
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    font-weight: 700;
+    flex: 0 0 auto;
+    border: 3px solid #ffffff;
+  }
+  .typing-avatar.guest { background: var(--text-3); font-size: 1.6rem; }
+  .typing-sidebar .sb-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.35;
+    word-break: break-word;
+    color: var(--text);
+    width: 100%;
+  }
+  .typing-sidebar .sb-id {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--primary);
+    padding: 0.32rem 0.65rem;
+    background: #ffffff;
+    border: 1px solid var(--primary-border);
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .typing-sidebar .sb-id.hidden { display: none; }
+  .sb-divider { width: 100%; height: 1px; background: var(--border-2); margin: 0.15rem 0; }
+  .sb-info {
+    width: 100%;
+    font-size: 0.66rem;
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .sb-info strong {
+    color: var(--text);
+    display: block;
+    font-size: 0.82rem;
+    margin-top: 0.22rem;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+  .text-size-controls {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+  .font-size-btn {
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 3px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--ui-font);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+    padding: 0;
+  }
+  .font-size-btn:hover:not(:disabled) {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+  }
+  .font-size-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .font-size-display {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.66rem;
+    color: var(--text-2);
+    letter-spacing: 0.02em;
+    min-width: 3rem;
+    text-align: center;
+    font-weight: 600;
+  }
+  .fullscreen-btn {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--ui-font);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem 0.4rem;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    letter-spacing: 0.03em;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .fullscreen-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+  }
+  .fullscreen-btn svg { width: 0.85rem; height: 0.85rem; }
+  .sb-submit {
+    margin-top: auto;
+    width: 100%;
+    background: var(--primary);
+    color: #ffffff;
+    border: 1px solid var(--primary);
+    padding: 0.75rem 0.5rem;
+    font-family: var(--ui-font);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background 0.15s;
+  }
+  .sb-submit:hover { background: var(--primary-hover); }
+  .sb-submit:disabled {
+    background: var(--border);
+    border-color: var(--border);
+    color: var(--text-3);
+    cursor: not-allowed;
+  }
+  .typing-main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 0.85rem 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .timer-text {
+    flex: 0 0 auto;
+    padding: 0 2rem;
+    margin-bottom: 0.65rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .timer-text .timer-value {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.06em;
+  }
+  .timer-text.warning .timer-value { color: var(--danger); }
+
+  .typing-box {
+    font-size: var(--typing-size);
+    line-height: var(--typing-line-height, 1.55);
+    font-family: var(--ui-font);
+    background: #ffffff;
+    border: 1.5px solid #000000;
+    border-radius: 0;
+    margin: 0 2rem;
+    padding: 0.9rem 1.15rem;
+    color: #000000;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+    letter-spacing: 0.005em;
+    user-select: text;
+    min-height: 0;
+    outline: none;
+    box-shadow: none;
+  }
+  .typing-box.passage-box { flex: 3 1 0; margin-bottom: 0.65rem; cursor: default; }
+  .typing-box.input-box {
+    flex: 2 1 0;
+    resize: none;
+    caret-color: #000000;
+  }
+  .typing-box.input-box:focus,
+  .typing-box.input-box:focus-visible {
+    border-color: #000000;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  .typing-box.input-box::placeholder { color: var(--text-3); }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.8rem 0;
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.65rem;
+    border: 1px solid var(--border);
+    background: #ffffff;
+    color: var(--text);
+    font-family: var(--ui-font);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .page-btn:hover:not(:disabled) {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .page-btn.active {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+  }
+  .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .page-ellipsis { color: var(--text-3); padding: 0 0.35rem; font-weight: 700; }
+
+  .fb-loader {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: 1000;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .fb-loader::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -40%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #fef08a, #86efac, #f9a8d4, transparent);
+    animation: fbLoad 1.4s ease-in-out infinite;
+  }
+  @keyframes fbLoad {
+    0% { left: -40%; }
+    100% { left: 100%; }
+  }
+  .fb-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    z-index: 1200;
+    transition: transform 0.3s ease;
+    max-width: 90%;
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+  .fb-toast.show { transform: translateX(-50%) translateY(0); }
+  .fb-toast.ok { background: #15803d; }
+  .fb-toast.err { background: #b91c1c; }
+
+  @media (max-width: 900px) {
+    .admin-layout { flex-direction: column; }
+    .admin-nav { position: static; width: 100%; }
+  }
+  @media (max-width: 700px) {
+    .gov-header-inner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .gov-header-right { width: 100%; }
+    .typing-sidebar { flex: 0 0 9.5rem; }
+    .typing-box { margin: 0 1rem; }
+    .timer-text { padding: 0 1rem; }
+
+    /* Homepage mobile: top-align, no long empty space */
+    .gov-main.home-main {
+      justify-content: flex-start;
+      padding-top: 1rem;
+      padding-bottom: 1.25rem;
+    }
+
+    .result-main { padding: 0.85rem 0.85rem 1rem; }
+    .result-header { padding: 0.85rem 0.75rem 1rem; }
+    .result-badge { margin-bottom: 0.6rem; }
+    .result-info-cell { padding: 0 0.55rem; }
+    .result-info-cell .val { font-size: 0.85rem; }
+    .result-info-cell .val.mono { font-size: 0.75rem; letter-spacing: 0.1em; }
+    .result-info-cell .val-marks { font-size: 1.5rem; }
+    .result-info-cell .val-marks small { font-size: 0.78rem; }
+    .result-info-cell .lbl { font-size: 0.52rem; letter-spacing: 0.12em; }
+    .result-body { padding: 1rem 1rem 1.1rem; }
+    .result-stats { gap: 0.4rem; }
+    .result-stat { padding: 0.55rem 0.3rem; }
+    .result-stat .num { font-size: 1.15rem; }
+    .result-stat .lbl { font-size: 0.54rem; }
+    .result-details { grid-template-columns: 1fr; gap: 0.45rem; padding: 0.75rem 0; }
+    .result-details .row { font-size: 0.8rem; }
+    .btn-review-action,
+    .btn-home-action { font-size: 0.82rem; padding: 0.65rem 0.9rem; flex: 1 1 100%; }
+    .review-paragraph { font-size: 1.05rem; padding: 0.85rem 1rem; }
+    .review-legend { font-size: 0.6rem; gap: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="fb-loader" id="fbLoader"></div>
+<div class="fb-toast" id="fbToast"></div>
+
+<header class="gov-header">
+  <div class="gov-header-inner">
+    <div class="gov-logo-text">
+      <h1>TypingX <span class="pro">PRO</span></h1>
+      <div class="sub">Precision in Every Keystroke</div>
+    </div>
+    <div class="gov-header-right">
+      <a class="tg-link" href="https://telegram.me/TypingXPRO" target="_blank" rel="noopener noreferrer" aria-label="Join TypingX PRO on Telegram">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+        </svg>
+        <span>Join Telegram</span>
+      </a>
+      <button class="admin-icon-btn" id="adminTrigger" type="button" title="Admin Login" aria-label="Admin Login">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HOME -->
+<div class="page active" id="homePage">
+  <main class="gov-main home-main">
+    <div class="gov-card">
+      <div class="gov-section">
+        <div class="gov-section-title">
+          <span class="num">1</span>
+          <span>Candidate Verification</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="learnerId">Learner ID <span class="required">*</span></label>
+          <div class="input-with-btn">
+            <input type="text" class="form-input" id="learnerId"
+                   placeholder="Enter your Learner ID" autocomplete="off"
+                   spellcheck="false" maxlength="8">
+            <button class="btn btn-outline" id="verifyBtn">Verify</button>
+          </div>
+          <p class="status-msg" id="status"></p>
+          <div class="verified-badge" id="studentName" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="gov-section">
+        <div class="gov-section-title">
+          <span class="num">2</span>
+          <span>Select Test Language</span>
+        </div>
+        <div class="lang-grid">
+          <label class="lang-tick">
+            <input type="checkbox" id="langEn">
+            <span class="check-box"></span>
+            <span>English</span>
+          </label>
+          <label class="lang-tick">
+            <input type="checkbox" id="langHi">
+            <span class="check-box"></span>
+            <span>Hindi</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" id="enterBtn" disabled>Proceed to Test</button>
+
+      <div class="free-test-btn-wrap">
+        <div class="free-test-hint">Don't have a Learner ID?</div>
+        <button class="free-test-btn" id="freeTestLink" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          <span>Take a Free Test</span>
+          <svg class="arr" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="gov-footer">
+    <div class="footer-inner">
+      <span class="footer-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+        Developed by <strong>Neeraj Kumar Meena</strong>
+      </span>
+      <span class="footer-sep">•</span>
+      <a class="footer-contact" href="mailto:NEERAJMEENATONK1@gmail.com">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M22 6l-10 7L2 6"/>
+        </svg>
+        Help / Contact: NEERAJMEENATONK1@gmail.com
+      </a>
+    </div>
+  </footer>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="adminPage">
+  <div class="back-bar">
+    <button class="back-btn" id="adminBack">← Back to Home</button>
+    <button class="logout-btn" id="adminLogout" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Logout
+    </button>
+  </div>
+
+  <main class="gov-main">
+    <div class="admin-layout">
+      <aside class="admin-nav">
+        <div class="admin-nav-title">Management</div>
+        <button class="admin-nav-item active" data-panel="students">Student Registration</button>
+        <button class="admin-nav-item" data-panel="fonts">Font Management</button>
+        <button class="admin-nav-item" data-panel="content">Test Content</button>
+        <button class="admin-nav-item" data-panel="typing">Typing Settings</button>
+      </aside>
+
+      <div class="admin-panels">
+        <div class="admin-panel active" id="panel-students">
+          <div class="admin-panel-header">
+            <h3>Student Registration</h3>
+            <p>Register new students and manage existing records</p>
+          </div>
+          <div class="gov-card wide" style="margin:0 0 1.1rem 0;">
+            <div class="gov-section-title" style="margin-bottom:0.95rem;"><span>Register New Student</span></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:0.9rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="newStudentName">Student Full Name <span class="required">*</span></label>
+                <input type="text" class="form-input" id="newStudentName"
+                       placeholder="e.g. RAVI KUMAR" autocomplete="off" spellcheck="false"
+                       style="text-transform: uppercase;">
+                <div class="form-hint">Only letters and spaces. Auto CAPITAL.</div>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="newFatherName">Father's Name <span class="required">*</span></label>
+                <input type="text" class="form-input" id="newFatherName"
+                       placeholder="e.g. SURESH KUMAR" autocomplete="off" spellcheck="false"
+                       style="text-transform: uppercase;">
+                <div class="form-hint">Only letters and spaces. Auto CAPITAL.</div>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="newDob">Date of Birth <span class="required">*</span></label>
+                <input type="date" class="form-input" id="newDob">
+              </div>
+            </div>
+            <button class="btn btn-primary" id="registerStudentBtn" disabled>Register Student</button>
+            <p class="status-msg" id="registerStatus"></p>
+            <div class="id-result" id="idResult">
+              <div class="id-result-label">Generated Learner ID</div>
+              <div class="id-result-row">
+                <span class="id-result-value" id="generatedIdValue">--------</span>
+                <button class="copy-btn" id="copyIdBtn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  <span id="copyBtnText">Copy</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-panel-header">
+            <h3 style="font-size:0.95rem;">Registered Students</h3>
+            <p id="studentsCountLabel">0 students registered</p>
+          </div>
+          <div class="gov-table-wrap">
+            <table class="gov-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Learner ID</th>
+                  <th>Father's Name</th>
+                  <th>Date of Birth</th>
+                  <th>Registered On</th>
+                  <th style="text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="studentsListBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-panel" id="panel-fonts">
+          <div class="admin-panel-header">
+            <h3>Font Management</h3>
+            <p>Upload custom fonts for each test language</p>
+          </div>
+          <div class="gov-card wide" style="margin:0 0 1.1rem 0;">
+            <div class="gov-section-title" style="margin-bottom:0.95rem;"><span>Upload Font File</span></div>
+            <div class="form-group">
+              <label class="form-label">Target Language <span class="required">*</span></label>
+              <div class="lang-grid">
+                <label class="lang-tick">
+                  <input type="checkbox" id="fontLangEn">
+                  <span class="check-box"></span>
+                  <span>English</span>
+                </label>
+                <label class="lang-tick">
+                  <input type="checkbox" id="fontLangHi">
+                  <span class="check-box"></span>
+                  <span>Hindi</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fontFile">Font File <span class="required">*</span></label>
+              <input type="file" class="form-input" id="fontFile" accept=".ttf,.otf,.woff,.woff2">
+              <div class="form-hint">Supported formats: TTF, OTF, WOFF, WOFF2</div>
+            </div>
+            <button class="btn btn-primary" id="uploadFontBtn" disabled>Upload Font</button>
+            <p class="status-msg" id="fontStatus"></p>
+          </div>
+
+          <div class="admin-panel-header">
+            <h3 style="font-size:0.95rem;">Uploaded Fonts</h3>
+          </div>
+          <div class="gov-table-wrap">
+            <table class="gov-table">
+              <thead>
+                <tr>
+                  <th>Language</th>
+                  <th>File Name</th>
+                  <th>Uploaded On</th>
+                  <th style="text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="fontsListBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-panel" id="panel-content">
+          <div class="admin-panel-header">
+            <h3>Test Content Management</h3>
+            <p>Create tests by uploading .txt files or writing content directly</p>
+          </div>
+          <div class="gov-card wide" style="margin:0 0 1.1rem 0;">
+            <div class="gov-section-title" style="margin-bottom:0.95rem;"><span>Create New Test</span></div>
+            <div class="form-group">
+              <label class="form-label">Target Language <span class="required">*</span></label>
+              <div class="lang-grid">
+                <label class="lang-tick">
+                  <input type="checkbox" id="testLangEn">
+                  <span class="check-box"></span>
+                  <span>English</span>
+                </label>
+                <label class="lang-tick">
+                  <input type="checkbox" id="testLangHi">
+                  <span class="check-box"></span>
+                  <span>Hindi</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Content Source <span class="required">*</span></label>
+              <div style="display:flex; gap:0.3rem; padding:0.2rem; background:var(--surface-3); border:1px solid var(--border); width:fit-content; border-radius:3px;">
+                <button type="button" id="modeUploadBtn" style="font-family:var(--ui-font); font-size:0.83rem; font-weight:600; padding:0.45rem 1rem; border:none; background:var(--primary); color:#fff; cursor:pointer; border-radius:2px;">Upload .txt File</button>
+                <button type="button" id="modeWriteBtn" style="font-family:var(--ui-font); font-size:0.83rem; font-weight:600; padding:0.45rem 1rem; border:none; background:transparent; color:var(--text-2); cursor:pointer; border-radius:2px;">Write Content</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="testTitle">Test Title <span class="required">*</span></label>
+              <input type="text" class="form-input" id="testTitle" maxlength="100"
+                     placeholder="e.g. Beginner English Test 1" autocomplete="off" spellcheck="false">
+            </div>
+            <div id="paneUpload">
+              <div class="form-group">
+                <label class="form-label" for="testFile">Select .txt File <span class="required">*</span></label>
+                <input type="file" class="form-input" id="testFile" accept=".txt,text/plain">
+              </div>
+              <button class="btn btn-primary" id="uploadTestBtn" disabled>Upload Test Content</button>
+            </div>
+            <div id="paneWrite" style="display:none;">
+              <div class="form-group">
+                <label class="form-label" for="writeContent">Test Content <span class="required">*</span></label>
+                <textarea class="form-textarea xxl" id="writeContent"
+                          placeholder="Type or paste the passage here..."
+                          spellcheck="false" autocorrect="off" autocapitalize="off"
+                          autocomplete="off" data-gramm="false" data-gramm_editor="false"
+                          data-enable-grammarly="false"></textarea>
+                <div class="word-counter">
+                  <span>Live word count</span>
+                  <span><strong id="writeWordCount">0</strong> words</span>
+                </div>
+              </div>
+              <button class="btn btn-primary" id="saveWrittenTestBtn" disabled>Save Test Content</button>
+            </div>
+            <p class="status-msg" id="contentStatus"></p>
+          </div>
+
+          <div class="admin-panel-header">
+            <h3 style="font-size:0.95rem;">Uploaded Test Files</h3>
+            <p id="testsCountLabel">0 tests uploaded</p>
+          </div>
+          <div class="gov-table-wrap">
+            <table class="gov-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th style="text-align:center;">Language</th>
+                  <th style="text-align:center;">Word Count</th>
+                  <th style="text-align:center;">Upload Date</th>
+                  <th style="text-align:center;">Free Test</th>
+                  <th style="text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="filesListBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="paginationControls"></div>
+        </div>
+
+        <div class="admin-panel" id="panel-typing">
+          <div class="admin-panel-header">
+            <h3>Typing Settings</h3>
+            <p>Configure the default font size and line spacing for passage and typing box</p>
+          </div>
+
+          <div class="gov-card wide" style="margin:0 0 1.1rem 0;">
+            <div class="gov-section-title" style="margin-bottom:0.95rem;"><span>Display Defaults</span></div>
+
+            <div class="form-group">
+              <label class="form-label" for="settingFontSize">Default Font Size</label>
+              <select class="form-select" id="settingFontSize">
+                <option value="0.9rem">Small (0.9rem)</option>
+                <option value="1.05rem">Compact (1.05rem)</option>
+                <option value="1.2rem">Normal (1.2rem)</option>
+                <option value="1.35rem">XL (1.35rem) — Current Default</option>
+                <option value="1.55rem">XXL (1.55rem)</option>
+                <option value="1.8rem">XXXL (1.8rem)</option>
+              </select>
+              <div class="form-hint">This will be the default size when a student starts a test. Student can still adjust temporarily with A+ / A−.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="settingLineHeight">Line Spacing (Line Height)</label>
+              <select class="form-select" id="settingLineHeight">
+                <option value="1.3">Compact (1.3)</option>
+                <option value="1.4">Tight (1.4)</option>
+                <option value="1.55">Normal (1.55) — Current Default</option>
+                <option value="1.7">Relaxed (1.7)</option>
+                <option value="1.85">Loose (1.85)</option>
+              </select>
+              <div class="form-hint">Space between lines in the passage and typing box.</div>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
+              <button class="btn btn-primary" id="saveTypingSettingsBtn">Save Settings</button>
+              <button class="btn btn-outline" id="resetTypingSettingsBtn">Reset to Default</button>
+            </div>
+            <p class="status-msg" id="typingSettingsStatus"></p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="gov-footer">
+    <div class="footer-inner">
+      <span class="footer-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+        Developed by <strong>Neeraj Kumar Meena</strong>
+      </span>
+      <span class="footer-sep">•</span>
+      <a class="footer-contact" href="mailto:NEERAJMEENATONK1@gmail.com">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M22 6l-10 7L2 6"/>
+        </svg>
+        Help / Contact: NEERAJMEENATONK1@gmail.com
+      </a>
+    </div>
+  </footer>
+</div>
+
+<!-- TEST SELECTION -->
+<div class="page" id="testSelectionPage">
+  <div class="back-bar">
+    <button class="back-btn" id="testSelectionBack">← Back to Home</button>
+  </div>
+
+  <main class="gov-main">
+    <div class="gov-page-title">
+      <h2>Available Tests</h2>
+      <p>Choose a test from the list below to begin</p>
+    </div>
+
+    <div class="gov-card wide" style="padding:0.85rem 1.15rem; margin-bottom:1rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.8rem; font-size:0.85rem; color:var(--text-2);">
+      <div>Candidate: <strong style="color:var(--text);" id="tsCandidate">—</strong></div>
+      <div>Learner ID: <strong style="color:var(--text);" id="tsLearnerId">—</strong></div>
+      <div>Language: <strong style="color:var(--text);" id="tsLanguage">—</strong></div>
+      <div>Total Tests: <strong style="color:var(--text);" id="tsTotalTests">0</strong></div>
+    </div>
+
+    <div class="gov-table-wrap">
+      <table class="gov-table">
+        <thead>
+          <tr>
+            <th style="width:5rem; text-align:center;">S.No.</th>
+            <th>Test Title</th>
+            <th style="width:6rem; text-align:center;">Marks</th>
+            <th style="width:6rem; text-align:center;">Duration</th>
+            <th style="width:8rem; text-align:center;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="tsTableBody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="gov-footer">
+    <div class="footer-inner">
+      <span class="footer-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+        Developed by <strong>Neeraj Kumar Meena</strong>
+      </span>
+      <span class="footer-sep">•</span>
+      <a class="footer-contact" href="mailto:NEERAJMEENATONK1@gmail.com">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M22 6l-10 7L2 6"/>
+        </svg>
+        Help / Contact: NEERAJMEENATONK1@gmail.com
+      </a>
+    </div>
+  </footer>
+</div>
+
+<!-- FREE TEST -->
+<div class="page" id="freeTestPage">
+  <div class="back-bar">
+    <button class="back-btn" id="freeTestBack">← Back to Home</button>
+  </div>
+
+  <main class="gov-main">
+    <div class="gov-page-title">
+      <h2>Free Test Portal</h2>
+    </div>
+
+    <div class="gov-table-wrap">
+      <table class="gov-table">
+        <thead>
+          <tr>
+            <th style="width:3.5rem; text-align:center;">S.No.</th>
+            <th>Test Title</th>
+            <th style="width:6rem; text-align:center;">Language</th>
+            <th style="width:6rem; text-align:center;">Duration</th>
+            <th style="width:4.5rem; text-align:center;">Words</th>
+            <th style="width:5rem; text-align:center;">Max Marks</th>
+            <th style="width:7rem; text-align:center;">Upload Date</th>
+            <th style="width:5.5rem; text-align:center;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="ftTableBody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="gov-footer">
+    <div class="footer-inner">
+      <span class="footer-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+        Developed by <strong>Neeraj Kumar Meena</strong>
+      </span>
+      <span class="footer-sep">•</span>
+      <a class="footer-contact" href="mailto:NEERAJMEENATONK1@gmail.com">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M22 6l-10 7L2 6"/>
+        </svg>
+        Help / Contact: NEERAJMEENATONK1@gmail.com
+      </a>
+    </div>
+  </footer>
+</div>
+
+<!-- RESULT -->
+<div class="page" id="resultPage">
+  <main class="gov-main result-main">
+    <div class="result-wrap">
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-badge">Test Result</div>
+          <div class="result-info-row">
+            <div class="result-info-cell">
+              <div class="lbl">Candidate</div>
+              <div class="val" id="rName">—</div>
+            </div>
+            <div class="result-info-cell" id="rIdWrap">
+              <div class="lbl">Learner ID</div>
+              <div class="val mono" id="rId">—</div>
+            </div>
+            <div class="result-info-cell">
+              <div class="lbl">Marks</div>
+              <div class="val-marks"><span id="rMarks">0.00</span><small>/ 25</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-body">
+          <div class="result-stats">
+            <div class="result-stat correct">
+              <div class="num" id="rvCorrect">0</div>
+              <div class="lbl">Correct</div>
+            </div>
+            <div class="result-stat wrong">
+              <div class="num" id="rvWrong">0</div>
+              <div class="lbl">Wrong</div>
+            </div>
+            <div class="result-stat skipped">
+              <div class="num" id="rvSkipped">0</div>
+              <div class="lbl">Skipped</div>
+            </div>
+            <div class="result-stat">
+              <div class="num" id="rvTotal">0</div>
+              <div class="lbl">Total</div>
+            </div>
+          </div>
+
+          <div class="result-details">
+            <div class="row">
+              <span class="k">Test Title</span>
+              <span class="v" id="rTest">—</span>
+            </div>
+            <div class="row">
+              <span class="k">Language</span>
+              <span class="v" id="rLang">—</span>
+            </div>
+            <div class="row">
+              <span class="k">Date &amp; Time</span>
+              <span class="v" id="rDate">—</span>
+            </div>
+            <div class="row">
+              <span class="k">Words Typed Correctly</span>
+              <span class="v" id="rTotalWords">—</span>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button class="btn-review-action" id="toggleReviewBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3v18h18"/>
+                <path d="M7 14l4-4 4 4 5-6"/>
+              </svg>
+              <span id="toggleReviewText">Detailed Word Analysis</span>
+            </button>
+            <button class="btn-home-action" id="resultHomeBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 12l9-9 9 9"/>
+                <path d="M5 10v10h14V10"/>
+              </svg>
+              <span>Return to Homepage</span>
+            </button>
+          </div>
+
+          <div class="review-box" id="reviewBox">
+            <div class="review-box-header">
+              <span>Detailed Word Analysis</span>
+              <div class="review-legend">
+                <span class="leg"><span class="swatch correct"></span>Correct</span>
+                <span class="leg"><span class="swatch typed"></span>You typed</span>
+                <span class="leg"><span class="swatch fix"></span>Correct form</span>
+                <span class="leg"><span class="swatch skipped"></span>Skipped</span>
+              </div>
+            </div>
+            <div class="review-paragraph" id="reviewParagraph"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="gov-footer">
+    <div class="footer-inner">
+      <span class="footer-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+        Developed by <strong>Neeraj Kumar Meena</strong>
+      </span>
+      <span class="footer-sep">•</span>
+      <a class="footer-contact" href="mailto:NEERAJMEENATONK1@gmail.com">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M22 6l-10 7L2 6"/>
+        </svg>
+        Help / Contact: NEERAJMEENATONK1@gmail.com
+      </a>
+    </div>
+  </footer>
+</div>
+
+<!-- TYPING SCREEN -->
+<div id="typingScreen">
+  <aside class="typing-sidebar">
+    <div class="typing-avatar" id="avatarInitials">?</div>
+    <div class="sb-name" id="sbName">—</div>
+    <div class="sb-id" id="sbId">—</div>
+    <div class="sb-divider"></div>
+    <div class="sb-info">Language <strong id="sbLanguage">—</strong></div>
+    <div class="sb-divider"></div>
+    <div class="sb-info" style="margin-bottom:0.2rem;">Text Size</div>
+    <div class="text-size-controls">
+      <button class="font-size-btn" id="fontDecrease" type="button">A−</button>
+      <span class="font-size-display" id="fontSizeDisplay">XL</span>
+      <button class="font-size-btn" id="fontIncrease" type="button">A+</button>
+    </div>
+    <button class="fullscreen-btn" id="fullscreenBtn" type="button" title="Toggle Fullscreen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+      </svg>
+      <span>Fullscreen</span>
+    </button>
+    <button class="sb-submit" id="sbSubmit">Submit</button>
+  </aside>
+
+  <div class="typing-main">
+    <div class="timer-text" id="timerText">
+      <span>Remaining Time :</span>
+      <span class="timer-value" id="timerValue">10:00</span>
+    </div>
+    <div class="typing-box passage-box" id="passageBox"></div>
+    <textarea class="typing-box input-box" id="inputBox"
+              placeholder="Start typing here..."
+              spellcheck="false" autocomplete="off" autocorrect="off"
+              autocapitalize="off"></textarea>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="modal-backdrop" id="adminModal">
+  <div class="modal">
+    <h2>
+      <span class="icon-circle info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </span>
+      Administrator Login
+    </h2>
+    <p class="modal-sub">Authorized personnel only. All access is monitored.</p>
+    <div class="form-group">
+      <label class="form-label" for="adminUser">Email Address</label>
+      <input type="email" class="form-input" id="adminUser" placeholder="Enter admin email"
+             autocomplete="off" spellcheck="false">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="adminPass">Password</label>
+      <input type="password" class="form-input" id="adminPass" placeholder="Enter password"
+             autocomplete="off">
+    </div>
+    <p class="status-msg" id="adminStatus"></p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="adminCancel">Cancel</button>
+      <button class="btn btn-primary" id="adminLogin">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT CONFIRM MODAL -->
+<div class="modal-backdrop" id="submitModal">
+  <div class="modal">
+    <h2>
+      <span class="icon-circle info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+      </span>
+      Confirm Submission
+    </h2>
+    <p class="modal-sub" id="submitMsg">Are you sure you want to submit your test?</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="submitNo">No</button>
+      <button class="btn btn-primary" id="submitYes">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENERIC CONFIRM MODAL -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal danger">
+    <h2 id="confirmModalTitle">
+      <span class="icon-circle warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </span>
+      <span id="confirmModalTitleText">Confirm</span>
+    </h2>
+    <p class="modal-sub" id="confirmModalMsg">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="confirmModalNo">Cancel</button>
+      <button class="btn btn-danger" id="confirmModalYes">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENERIC ALERT MODAL -->
+<div class="modal-backdrop" id="alertModal">
+  <div class="modal">
+    <h2>
+      <span class="icon-circle info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+      </span>
+      <span id="alertModalTitleText">Notice</span>
+    </h2>
+    <p class="modal-sub" id="alertModalMsg">—</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="alertModalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var firebaseConfig = {
+    apiKey: "AIzaSyDHC2Hc1ggH7apBdSSq7utg66X8cUUxplg",
+    authDomain: "typingxpro-286af.firebaseapp.com",
+    databaseURL: "https://typingxpro-286af-default-rtdb.firebaseio.com",
+    projectId: "typingxpro-286af",
+    storageBucket: "typingxpro-286af.firebasestorage.app",
+    messagingSenderId: "1069619923754",
+    appId: "1:1069619923754:web:747c4e28faef3714c92c53"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var auth = firebase.auth();
+  var db = firebase.database();
+
+  var students = [];
+  var tests = [];
+  var fonts = {};
+  var typingSettings = { fontSize: "1.35rem", lineHeight: "1.55" };
+
+  var fbLoaderEl = document.getElementById("fbLoader");
+  var fbToastEl = document.getElementById("fbToast");
+  var fbToastTimer = null;
+  function showLoader(on) {
+    if (!fbLoaderEl) return;
+    fbLoaderEl.style.display = on ? "block" : "none";
+  }
+  function toast(msg, type) {
+    if (!fbToastEl) return;
+    fbToastEl.textContent = msg;
+    fbToastEl.className = "fb-toast show" + (type ? " " + type : "");
+    if (fbToastTimer) clearTimeout(fbToastTimer);
+    fbToastTimer = setTimeout(function () {
+      fbToastEl.classList.remove("show");
+    }, 3200);
+  }
+
+  var TEST_DURATION_SEC = 600, TOTAL_MARKS = 25;
+  var WORD_TARGET = { en: 500, hi: 400 };
+  var FONT_STEPS = ["0.9rem", "1.05rem", "1.2rem", "1.35rem", "1.55rem", "1.8rem"];
+  var FONT_STEP_LABELS = ["Small", "Compact", "Normal", "XL", "XXL", "XXXL"];
+  var DEFAULT_FONT_STEP = 3;
+  var ADMIN_TESTS_PER_PAGE = 10;
+  var REVIEW_LABEL_CLOSED = "Detailed Word Analysis";
+  var REVIEW_LABEL_OPEN = "Hide Detailed Analysis";
+
+  var loadedFontNames = {};
+  var $ = function (id) { return document.getElementById(id); };
+
+  var homePage = $("homePage"), adminPage = $("adminPage");
+  var testSelectionPage = $("testSelectionPage"), freeTestPage = $("freeTestPage");
+  var resultPage = $("resultPage");
+  var typingScreen = $("typingScreen");
+
+  var adminTrigger = $("adminTrigger"), adminBack = $("adminBack"), adminLogout = $("adminLogout");
+  var testSelectionBack = $("testSelectionBack");
+  var adminModal = $("adminModal"), adminUser = $("adminUser"), adminPass = $("adminPass");
+  var adminStatus = $("adminStatus"), adminCancel = $("adminCancel"), adminLogin = $("adminLogin");
+
+  var learnerInput = $("learnerId"), verifyBtn = $("verifyBtn"), statusEl = $("status");
+  var nameEl = $("studentName"), langEn = $("langEn"), langHi = $("langHi"), enterBtn = $("enterBtn");
+
+  var freeTestLink = $("freeTestLink"), freeTestBack = $("freeTestBack");
+  var ftTableBody = $("ftTableBody");
+
+  var newStudentName = $("newStudentName"), newFatherName = $("newFatherName"), newDob = $("newDob");
+  var registerStudentBtn = $("registerStudentBtn"), registerStatus = $("registerStatus");
+  var idResult = $("idResult"), generatedIdValue = $("generatedIdValue"), copyIdBtn = $("copyIdBtn");
+  var copyBtnText = $("copyBtnText");
+  var studentsListBody = $("studentsListBody"), studentsCountLabel = $("studentsCountLabel");
+
+  var fontLangEn = $("fontLangEn"), fontLangHi = $("fontLangHi"), fontFile = $("fontFile");
+  var uploadFontBtn = $("uploadFontBtn"), fontStatus = $("fontStatus"), fontsListBody = $("fontsListBody");
+
+  var testLangEn = $("testLangEn"), testLangHi = $("testLangHi"), testTitle = $("testTitle");
+  var testFile = $("testFile"), uploadTestBtn = $("uploadTestBtn"), writeContent = $("writeContent");
+  var saveWrittenTestBtn = $("saveWrittenTestBtn");
+  var modeUploadBtn = $("modeUploadBtn"), modeWriteBtn = $("modeWriteBtn");
+  var paneUpload = $("paneUpload"), paneWrite = $("paneWrite");
+  var writeWordCount = $("writeWordCount");
+  var contentStatus = $("contentStatus"), filesListBody = $("filesListBody");
+  var testsCountLabel = $("testsCountLabel"), paginationControls = $("paginationControls");
+
+  var settingFontSize = $("settingFontSize");
+  var settingLineHeight = $("settingLineHeight");
+  var saveTypingSettingsBtn = $("saveTypingSettingsBtn");
+  var resetTypingSettingsBtn = $("resetTypingSettingsBtn");
+  var typingSettingsStatus = $("typingSettingsStatus");
+
+  var tsCandidate = $("tsCandidate"), tsLanguage = $("tsLanguage"), tsLearnerId = $("tsLearnerId");
+  var tsTotalTests = $("tsTotalTests"), tsTableBody = $("tsTableBody");
+
+  var avatarInitials = $("avatarInitials"), sbName = $("sbName"), sbId = $("sbId");
+  var sbLanguage = $("sbLanguage"), sbSubmit = $("sbSubmit");
+  var fontDecrease = $("fontDecrease"), fontIncrease = $("fontIncrease"), fontSizeDisplay = $("fontSizeDisplay");
+  var fullscreenBtn = $("fullscreenBtn");
+  var timerText = $("timerText"), timerValue = $("timerValue");
+  var passageBox = $("passageBox"), inputBox = $("inputBox");
+
+  var submitModal = $("submitModal"), submitMsg = $("submitMsg");
+  var submitNo = $("submitNo"), submitYes = $("submitYes");
+
+  var rName = $("rName"), rId = $("rId"), rIdWrap = $("rIdWrap");
+  var rTest = $("rTest"), rLang = $("rLang");
+  var rDate = $("rDate"), rMarks = $("rMarks"), rTotalWords = $("rTotalWords");
+  var rvCorrect = $("rvCorrect"), rvWrong = $("rvWrong"), rvSkipped = $("rvSkipped"), rvTotal = $("rvTotal");
+  var reviewParagraph = $("reviewParagraph");
+  var reviewBox = $("reviewBox");
+  var toggleReviewBtn = $("toggleReviewBtn"), toggleReviewText = $("toggleReviewText");
+  var resultHomeBtn = $("resultHomeBtn");
+
+  var confirmModal = $("confirmModal");
+  var confirmModalTitleText = $("confirmModalTitleText");
+  var confirmModalMsg = $("confirmModalMsg");
+  var confirmModalNo = $("confirmModalNo");
+  var confirmModalYes = $("confirmModalYes");
+
+  var alertModal = $("alertModal");
+  var alertModalTitleText = $("alertModalTitleText");
+  var alertModalMsg = $("alertModalMsg");
+  var alertModalOk = $("alertModalOk");
+
+  var currentPage = "home";
+  var reviewBuilt = false;
+
+  var confirmYesHandler = null;
+  function showConfirm(opts) {
+    confirmModalTitleText.textContent = opts.title || "Confirm";
+    confirmModalMsg.textContent = opts.message || "Are you sure?";
+    confirmModalYes.textContent = opts.yesText || "Confirm";
+    confirmModalNo.textContent = opts.noText || "Cancel";
+    confirmYesHandler = opts.onYes || function () {};
+    confirmModal.classList.add("show");
+    setTimeout(function () { confirmModalNo.focus(); }, 40);
+  }
+  function closeConfirm() {
+    confirmModal.classList.remove("show");
+    confirmYesHandler = null;
+  }
+  confirmModalNo.addEventListener("click", closeConfirm);
+  confirmModalYes.addEventListener("click", function () {
+    var h = confirmYesHandler;
+    closeConfirm();
+    if (typeof h === "function") h();
+  });
+  confirmModal.addEventListener("click", function (e) {
+    if (e.target === confirmModal) closeConfirm();
+  });
+
+  var alertOkHandler = null;
+  function showAlert(opts) {
+    alertModalTitleText.textContent = opts.title || "Notice";
+    alertModalMsg.textContent = opts.message || "";
+    alertModalOk.textContent = opts.okText || "OK";
+    alertOkHandler = opts.onOk || function () {};
+    alertModal.classList.add("show");
+    setTimeout(function () { alertModalOk.focus(); }, 40);
+  }
+  function closeAlert() {
+    alertModal.classList.remove("show");
+    var h = alertOkHandler;
+    alertOkHandler = null;
+    if (typeof h === "function") h();
+  }
+  alertModalOk.addEventListener("click", closeAlert);
+  alertModal.addEventListener("click", function (e) {
+    if (e.target === alertModal) closeAlert();
+  });
+
+  function trapFocus(modalEl) {
+    function handler(e) {
+      if (e.key !== "Tab") return;
+      var focusables = modalEl.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    modalEl.addEventListener("keydown", handler);
+  }
+  trapFocus(adminModal);
+  trapFocus(confirmModal);
+  trapFocus(alertModal);
+  trapFocus(submitModal);
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    if (confirmModal.classList.contains("show")) { closeConfirm(); return; }
+    if (alertModal.classList.contains("show")) { closeAlert(); return; }
+    if (adminModal.classList.contains("show")) { closeAdmin(); return; }
+    if (submitModal.classList.contains("show")) { submitModal.classList.remove("show"); return; }
+  });
+
+  function emptyStateHTML(opts) {
+    var icon = opts.icon || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>';
+    return '<div class="empty-state">' +
+      '<div class="empty-state-icon">' + icon + '</div>' +
+      '<div class="empty-state-heading">' + escapeHtml(opts.heading || "Nothing here yet") + '</div>' +
+      (opts.hint ? '<div class="empty-state-hint">' + escapeHtml(opts.hint) + '</div>' : '') +
+      '</div>';
+  }
+
+  function setStatus(el, text, type) {
+    if (!el) return;
+    el.textContent = text || "";
+    el.className = "status-msg" + (type ? " " + type : "");
+  }
+
+  function showPage(name) {
+    var map = { home: homePage, admin: adminPage, testSelection: testSelectionPage, freeTest: freeTestPage, result: resultPage };
+    Object.keys(map).forEach(function (k) {
+      var p = map[k];
+      if (!p) return;
+      p.classList.remove("active");
+      p.style.display = "none";
+    });
+    var target = map[name];
+    if (target) { target.classList.add("active"); target.style.display = "flex"; }
+    if (name === "typing") {
+      typingScreen.classList.add("active");
+      adminTrigger.style.display = "none";
+    } else {
+      typingScreen.classList.remove("active");
+      adminTrigger.style.display = "";
+    }
+    window.scrollTo(0, 0);
+    currentPage = name;
+  }
+
+  function toTitleCase(str) {
+    return String(str || "").toLowerCase().split(/\s+/).map(function (w) {
+      if (!w) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    }).join(" ");
+  }
+
+  function generateLearnerId() {
+    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    var id = "", attempts = 0;
+    do {
+      id = "";
+      for (var i = 0; i < 8; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
+      attempts++;
+    } while (students.some(function (s) { return s.id === id; }) && attempts < 500);
+    return id;
+  }
+
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function formatDate(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso); if (isNaN(d.getTime())) return "—";
+    var dd = String(d.getDate()).padStart(2, "0");
+    return dd + " " + MONTHS[d.getMonth()] + " " + d.getFullYear();
+  }
+  function formatDateTime(iso) {
+    var d = new Date(iso); if (isNaN(d.getTime())) return "—";
+    var dd = String(d.getDate()).padStart(2, "0");
+    var hh = String(d.getHours()).padStart(2, "0");
+    var mm = String(d.getMinutes()).padStart(2, "0");
+    return dd + " " + MONTHS[d.getMonth()] + " " + d.getFullYear() + ", " + hh + ":" + mm;
+  }
+  function formatDobForDisplay(dobStr) {
+    if (!dobStr) return "—";
+    var parts = dobStr.split("-"); if (parts.length !== 3) return dobStr;
+    var m = parseInt(parts[1], 10);
+    return parts[2] + " " + (MONTHS[m - 1] || "") + " " + parts[0];
+  }
+  function todayIso() {
+    var d = new Date();
+    var dd = String(d.getDate()).padStart(2, "0");
+    var mm = String(d.getMonth() + 1).padStart(2, "0");
+    return d.getFullYear() + "-" + mm + "-" + dd;
+  }
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  (function () {
+    var ticks = document.querySelectorAll(".lang-tick input[type='checkbox']");
+    if (!ticks.length) return;
+    function sync(cb) {
+      var p = cb.closest(".lang-tick");
+      if (!p) return;
+      if (cb.checked) p.classList.add("checked");
+      else p.classList.remove("checked");
+    }
+    ticks.forEach(function (cb) {
+      sync(cb);
+      cb.addEventListener("change", function () { sync(cb); });
+    });
+  })();
+
+  var FONT_FALLBACK = "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, 'Noto Sans Devanagari', 'Mangal', sans-serif";
+  function buildFontFamily(fontName) {
+    if (!fontName) return FONT_FALLBACK;
+    return "'" + fontName + "', " + FONT_FALLBACK;
+  }
+  function applyFontToElement(el, fontName) {
+    if (!el) return;
+    el.style.removeProperty("font-family");
+    el.style.setProperty("font-family", buildFontFamily(fontName), "important");
+  }
+  function clearFontFromElement(el) {
+    if (!el) return;
+    el.style.removeProperty("font-family");
+  }
+
+  function loadLanguageFont(lang, callback) {
+    var rec = fonts[lang];
+    if (!rec || !rec.dataUrl) { callback(null); return; }
+    if (loadedFontNames[lang]) { callback(loadedFontNames[lang]); return; }
+
+    var uniqueName = "TypingXFont_" + lang + "_" + Date.now();
+    var styleEl = document.createElement("style");
+    styleEl.id = "typingx-active-font-" + lang;
+    styleEl.textContent = "@font-face { font-family: '" + uniqueName + "'; src: url('" + rec.dataUrl + "'); }";
+    document.head.appendChild(styleEl);
+    loadedFontNames[lang] = uniqueName;
+
+    var called = false;
+    function done() {
+      if (called) return;
+      called = true;
+      callback(uniqueName);
+    }
+
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load("1rem '" + uniqueName + "'").then(done).catch(done);
+      setTimeout(done, 1200);
+    } else {
+      setTimeout(done, 80);
+    }
+  }
+
+  var currentFontStep = DEFAULT_FONT_STEP;
+  function loadFontStep() {
+    var idx = FONT_STEPS.indexOf(typingSettings.fontSize);
+    currentFontStep = idx >= 0 ? idx : DEFAULT_FONT_STEP;
+  }
+  function applyFontStep() {
+    var size = FONT_STEPS[currentFontStep];
+    document.documentElement.style.setProperty("--typing-size", size);
+    document.documentElement.style.setProperty("--typing-line-height", typingSettings.lineHeight);
+    if (fontSizeDisplay) fontSizeDisplay.textContent = FONT_STEP_LABELS[currentFontStep];
+    if (fontDecrease) fontDecrease.disabled = (currentFontStep <= 0);
+    if (fontIncrease) fontIncrease.disabled = (currentFontStep >= FONT_STEPS.length - 1);
+  }
+  function changeFontStep(delta) {
+    var next = currentFontStep + delta;
+    if (next < 0 || next >= FONT_STEPS.length) return;
+    currentFontStep = next; applyFontStep();
+  }
+  fontDecrease.addEventListener("click", function () { changeFontStep(-1); });
+  fontIncrease.addEventListener("click", function () { changeFontStep(+1); });
+
+  fullscreenBtn.addEventListener("click", function () {
+    var doc = document, el = document.documentElement;
+    var isFs = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
+    if (!isFs) {
+      var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if (req) { try { req.call(el); } catch (e) {} }
+    } else {
+      var exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+      if (exit) { try { exit.call(doc); } catch (e) {} }
+    }
+  });
+
+  showLoader(true);
+  var listenersReady = { students: false, tests: false, fonts: false, settings: false };
+  function checkAllReady() {
+    if (listenersReady.students && listenersReady.tests && listenersReady.fonts && listenersReady.settings) {
+      showLoader(false);
+    }
+  }
+
+  db.ref("students").on("value", function (snap) {
+    var val = snap.val();
+    students = val ? Object.keys(val).map(function (k) { return val[k]; }) : [];
+    listenersReady.students = true;
+    try { renderStudents(); } catch (e) {}
+    try { renderFreeTests(); } catch (e) {}
+    checkAllReady();
+  }, function (err) {
+    showLoader(false);
+    toast("Could not load students: " + err.message, "err");
+  });
+
+  db.ref("tests").on("value", function (snap) {
+    var val = snap.val();
+    tests = val ? Object.keys(val).map(function (k) { return val[k]; }) : [];
+    listenersReady.tests = true;
+    try { renderTests(); } catch (e) {}
+    try { renderFreeTests(); } catch (e) {}
+    checkAllReady();
+  }, function (err) {
+    showLoader(false);
+    toast("Could not load tests: " + err.message, "err");
+  });
+
+  db.ref("fonts").on("value", function (snap) {
+    var val = snap.val();
+    fonts = val && typeof val === "object" ? val : {};
+    listenersReady.fonts = true;
+    try { renderFonts(); } catch (e) {}
+    try { updateFontUploadBtn(); } catch (e) {}
+    checkAllReady();
+  }, function (err) {
+    showLoader(false);
+    toast("Could not load fonts: " + err.message, "err");
+  });
+
+  db.ref("settings").on("value", function (snap) {
+    var val = snap.val();
+    if (val && typeof val === "object") {
+      if (val.fontSize) typingSettings.fontSize = val.fontSize;
+      if (val.lineHeight) typingSettings.lineHeight = val.lineHeight;
+    }
+    listenersReady.settings = true;
+    document.documentElement.style.setProperty("--typing-line-height", typingSettings.lineHeight);
+    try { loadTypingSettingsToForm(); } catch (e) {}
+    try { loadFontStep(); } catch (e) {}
+    try { applyFontStep(); } catch (e) {}
+    checkAllReady();
+  }, function (err) {
+    showLoader(false);
+    toast("Could not load settings: " + err.message, "err");
+  });
+
+  auth.onAuthStateChanged(function (user) {
+    if (!user) {
+      if (currentPage === "admin") showPage("home");
+    }
+  });
+
+  var verifiedStudent = null;
+  var selectedLanguage = null;
+
+  function updateEnterState() { enterBtn.disabled = !(verifiedStudent && selectedLanguage); }
+  function resetStudent() {
+    verifiedStudent = null;
+    nameEl.textContent = "";
+    nameEl.style.display = "none";
+    updateEnterState();
+  }
+  function verifyLearner() {
+    var id = learnerInput.value.trim().toUpperCase();
+    if (!id) { resetStudent(); setStatus(statusEl, "Please enter your Learner ID.", "err"); return; }
+    var found = null;
+    for (var i = 0; i < students.length; i++) {
+      if (students[i].id === id) { found = students[i]; break; }
+    }
+    if (found) {
+      verifiedStudent = found;
+      nameEl.textContent = found.name;
+      nameEl.style.display = "flex";
+      setStatus(statusEl, "Learner verified successfully.", "ok");
+    } else {
+      resetStudent();
+      setStatus(statusEl, "Invalid Learner ID. Please try again.", "err");
+    }
+    updateEnterState();
+  }
+  verifyBtn.addEventListener("click", verifyLearner);
+  learnerInput.addEventListener("keydown", function (e) { if (e.key === "Enter") verifyLearner(); });
+  learnerInput.addEventListener("input", function () {
+    if (verifiedStudent) resetStudent();
+    setStatus(statusEl, "");
+  });
+
+  langEn.addEventListener("change", function () {
+    if (langEn.checked) { langHi.checked = false; selectedLanguage = "en"; }
+    else if (!langHi.checked) { selectedLanguage = null; }
+    updateEnterState();
+  });
+  langHi.addEventListener("change", function () {
+    if (langHi.checked) { langEn.checked = false; selectedLanguage = "hi"; }
+    else if (!langEn.checked) { selectedLanguage = null; }
+    updateEnterState();
+  });
+  enterBtn.addEventListener("click", function () {
+    if (!verifiedStudent || !selectedLanguage) return;
+    openTestSelection();
+  });
+
+  freeTestLink.addEventListener("click", function () { renderFreeTests(); showPage("freeTest"); });
+  freeTestBack.addEventListener("click", function () { showPage("home"); });
+  testSelectionBack.addEventListener("click", function () { showPage("home"); });
+  resultHomeBtn.addEventListener("click", function () { resetToHome(); });
+
+  toggleReviewBtn.addEventListener("click", function () {
+    if (!reviewBuilt) return;
+    if (reviewBox.classList.contains("show")) {
+      reviewBox.classList.remove("show");
+      if (toggleReviewText) toggleReviewText.textContent = REVIEW_LABEL_CLOSED;
+    } else {
+      reviewBox.classList.add("show");
+      if (toggleReviewText) toggleReviewText.textContent = REVIEW_LABEL_OPEN;
+    }
+  });
+
+  function getFreeTests() { return tests.filter(function (t) { return t.isFree === true; }); }
+  function renderFreeTests() {
+    if (!ftTableBody) return;
+    var freeList = getFreeTests();
+    var html = "";
+    if (!freeList.length) {
+      html = '<tr class="empty-row"><td colspan="8">' +
+        emptyStateHTML({
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6z"/></svg>',
+          heading: "No Free Tests Available",
+          hint: "Free tests will appear here once the administrator marks any test as free."
+        }) +
+        '</td></tr>';
+    } else {
+      freeList.slice().reverse().forEach(function (t, i) {
+        var lang = (t.language === "hi") ? "hi" : "en";
+        var langName = lang === "en" ? "English" : "Hindi";
+        var words = WORD_TARGET[lang];
+        var langBadge = lang === "en" ? "#dbeafe;color:#1e40af" : "#fef3c7;color:#92400e";
+        html +=
+          '<tr data-test-id="' + escapeHtml(t.id) + '">' +
+          '<td class="center">' + (i + 1) + '</td>' +
+          '<td class="truncate" title="' + escapeHtml(toTitleCase(t.title)) + '">' + escapeHtml(toTitleCase(t.title)) + '</td>' +
+          '<td class="center"><span style="display:inline-block; font-size:0.68rem; font-weight:700; padding:0.12rem 0.45rem; border-radius:3px; letter-spacing:0.04em; text-transform:uppercase; background:' + langBadge + '">' + langName + '</span></td>' +
+          '<td class="center">10 Minutes</td>' +
+          '<td class="center">' + words + '</td>' +
+          '<td class="center" style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-weight:700; color:var(--primary);">' + TOTAL_MARKS + '</td>' +
+          '<td class="center">' + formatDate(t.uploadedAt) + '</td>' +
+          '<td class="center"><button class="btn btn-success btn-sm" data-action="start-free">Start</button></td>' +
+          '</tr>';
+      });
+    }
+    ftTableBody.innerHTML = html;
+  }
+
+  ftTableBody.addEventListener("click", function (e) {
+    var t = e.target.closest('button[data-action="start-free"]');
+    if (!t) return;
+    var tr = t.closest("tr");
+    var id = tr.getAttribute("data-test-id");
+    var test = tests.filter(function (x) { return x.id === id; })[0];
+    if (test) startFreeTest(test);
+  });
+
+  function startFreeTest(test) {
+    verifiedStudent = { id: "", name: "Guest User", guest: true };
+    selectedLanguage = (test.language === "hi") ? "hi" : "en";
+    startTypingTest(test);
+  }
+
+  function openTestSelection() {
+    if (!tsCandidate) return;
+    tsCandidate.textContent = verifiedStudent.name;
+    tsLanguage.textContent = selectedLanguage === "en" ? "English" : "Hindi";
+    tsLearnerId.textContent = verifiedStudent.id;
+    var filtered = tests.filter(function (t) { return (t.language || "en") === selectedLanguage; });
+    tsTotalTests.textContent = filtered.length;
+    var html = "";
+    if (!filtered.length) {
+      html = '<tr class="empty-row"><td colspan="5">' +
+        emptyStateHTML({
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>',
+          heading: "No Tests Available",
+          hint: "No tests have been added for this language yet. Please contact the administrator."
+        }) +
+        '</td></tr>';
+    } else {
+      filtered.forEach(function (t, i) {
+        html +=
+          '<tr data-test-id="' + escapeHtml(t.id) + '">' +
+          '<td class="center">' + (i + 1) + '</td>' +
+          '<td class="truncate" title="' + escapeHtml(toTitleCase(t.title)) + '">' + escapeHtml(toTitleCase(t.title)) + '</td>' +
+          '<td class="center" style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-weight:700; color:var(--primary);">' + TOTAL_MARKS + '</td>' +
+          '<td class="center">10 Min</td>' +
+          '<td class="center"><button class="btn btn-primary btn-sm" data-action="start-ts">Start</button></td>' +
+          '</tr>';
+      });
+    }
+    tsTableBody.innerHTML = html;
+    showPage("testSelection");
+  }
+
+  tsTableBody.addEventListener("click", function (e) {
+    var t = e.target.closest('button[data-action="start-ts"]');
+    if (!t) return;
+    var tr = t.closest("tr");
+    var id = tr.getAttribute("data-test-id");
+    var test = tests.filter(function (x) { return x.id === id; })[0];
+    if (test) startTypingTest(test);
+  });
+
+  var currentTest = null, currentPassageWords = [];
+  var timerInterval = null, timerEndTime = null;
+  var timeRemaining = TEST_DURATION_SEC;
+  var testStarted = false, testEnded = false;
+  var idleCheckInterval = null;
+  var lastKeystrokeTime = null;
+  var IDLE_TIMEOUT_MS = 5 * 60 * 1000;
+
+  function preparePassage(content, target) {
+    var words = String(content || "").split(/\s+/).filter(Boolean);
+    if (!words.length) return [];
+    var result = [];
+    while (result.length < target) result = result.concat(words);
+    return result.slice(0, target);
+  }
+
+  function startTypingTest(test) {
+    currentTest = test;
+    var target = WORD_TARGET[selectedLanguage];
+    currentPassageWords = preparePassage(test.content, target);
+    if (!currentPassageWords.length) {
+      showAlert({ title: "No Content", message: "This test has no content. Please contact the administrator." });
+      return;
+    }
+
+    var isGuest = !!(verifiedStudent && verifiedStudent.guest);
+    avatarInitials.textContent = isGuest ? "👤" : (verifiedStudent.name || "?").trim().charAt(0).toUpperCase();
+    avatarInitials.classList.toggle("guest", isGuest);
+    sbName.textContent = verifiedStudent.name;
+    if (isGuest) {
+      sbId.textContent = "";
+      sbId.classList.add("hidden");
+    } else {
+      sbId.textContent = verifiedStudent.id;
+      sbId.classList.remove("hidden");
+    }
+    sbLanguage.textContent = selectedLanguage === "en" ? "English" : "Hindi";
+
+    timeRemaining = TEST_DURATION_SEC;
+    timerEndTime = null;
+    testStarted = false;
+    testEnded = false;
+    updateTimerDisplay();
+    timerText.classList.remove("warning");
+
+    passageBox.textContent = "";
+    inputBox.value = "";
+    inputBox.disabled = true;
+    sbSubmit.disabled = true;
+    clearFontFromElement(passageBox);
+    clearFontFromElement(inputBox);
+    loadFontStep();
+    applyFontStep();
+
+    showPage("typing");
+
+    loadLanguageFont(selectedLanguage, function (fontName) {
+      applyFontToElement(passageBox, fontName);
+      applyFontToElement(inputBox, fontName);
+      passageBox.textContent = currentPassageWords.join(" ");
+      passageBox.scrollTop = 0;
+      inputBox.value = "";
+      inputBox.disabled = false;
+      sbSubmit.disabled = false;
+
+      document.addEventListener("contextmenu", blockContext, true);
+      document.addEventListener("keydown", blockKeys, true);
+      document.addEventListener("paste", blockPaste, true);
+      document.addEventListener("copy", blockPaste, true);
+      document.addEventListener("cut", blockPaste, true);
+      document.addEventListener("dragstart", blockPaste, true);
+      document.addEventListener("drop", blockPaste, true);
+      document.addEventListener("dragover", blockPaste, true);
+      document.addEventListener("visibilitychange", onVisibilityChange);
+      window.addEventListener("blur", onWindowBlur);
+
+      lastKeystrokeTime = Date.now();
+      if (idleCheckInterval) clearInterval(idleCheckInterval);
+      idleCheckInterval = setInterval(checkIdle, 1000);
+
+      setTimeout(function () { inputBox.focus(); }, 60);
+    });
+  }
+
+  function checkIdle() {
+    if (testEnded) return;
+    if (testStarted) return;
+    if (!lastKeystrokeTime) return;
+    if (Date.now() - lastKeystrokeTime >= IDLE_TIMEOUT_MS) {
+      if (idleCheckInterval) { clearInterval(idleCheckInterval); idleCheckInterval = null; }
+      testEnded = true;
+      removeAntiCheat();
+      inputBox.disabled = true;
+      sbSubmit.disabled = true;
+      showAlert({
+        title: "Session Expired",
+        message: "Test expired due to inactivity (no typing for 5 minutes). Returning to home.",
+        onOk: function () { resetToHome(); }
+      });
+    }
+  }
+
+  function updateTimerDisplay() {
+    var m = Math.floor(timeRemaining / 60);
+    var s = timeRemaining % 60;
+    timerValue.textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    if (timeRemaining <= 60) timerText.classList.add("warning");
+    else timerText.classList.remove("warning");
+  }
+  function beginTimer() {
+    if (testStarted) return;
+    testStarted = true;
+    timerEndTime = Date.now() + (timeRemaining * 1000);
+    timerInterval = setInterval(tickTimer, 200);
+  }
+  function tickTimer() {
+    if (!timerEndTime) return;
+    var rem = Math.max(0, Math.ceil((timerEndTime - Date.now()) / 1000));
+    timeRemaining = rem;
+    updateTimerDisplay();
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval); timerInterval = null;
+      finalizeTest(true);
+    }
+  }
+  inputBox.addEventListener("input", function () {
+    lastKeystrokeTime = Date.now();
+    if (!testStarted && !testEnded) beginTimer();
+  });
+
+  function onVisibilityChange() {
+    if (document.hidden && currentPage === "typing" && !testEnded && testStarted) finalizeTest(true);
+  }
+  function onWindowBlur() {
+    if (currentPage === "typing" && !testEnded && testStarted) {
+      setTimeout(function () {
+        if (currentPage === "typing" && !testEnded && !document.hasFocus()) finalizeTest(true);
+      }, 150);
+    }
+  }
+
+  function blockContext(e) { e.preventDefault(); return false; }
+  function blockPaste(e) { e.preventDefault(); return false; }
+  function blockKeys(e) {
+    var k = e.key || "";
+    var ctrl = e.ctrlKey || e.metaKey;
+    if (k === "F12") { e.preventDefault(); return false; }
+    if (ctrl && e.shiftKey && ["I","i","J","j","C","c"].indexOf(k) !== -1) { e.preventDefault(); return false; }
+    if (ctrl && ["v","V","c","C","x","X","a","A","u","U","s","S","p","P"].indexOf(k) !== -1) { e.preventDefault(); return false; }
+    if (ctrl && ["t","T","n","N","w","W"].indexOf(k) !== -1) { e.preventDefault(); return false; }
+    if (ctrl && k === "Tab") { e.preventDefault(); return false; }
+    return true;
+  }
+  function removeAntiCheat() {
+    document.removeEventListener("contextmenu", blockContext, true);
+    document.removeEventListener("keydown", blockKeys, true);
+    document.removeEventListener("paste", blockPaste, true);
+    document.removeEventListener("copy", blockPaste, true);
+    document.removeEventListener("cut", blockPaste, true);
+    document.removeEventListener("dragstart", blockPaste, true);
+    document.removeEventListener("drop", blockPaste, true);
+    document.removeEventListener("dragover", blockPaste, true);
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+    window.removeEventListener("blur", onWindowBlur);
+    if (idleCheckInterval) { clearInterval(idleCheckInterval); idleCheckInterval = null; }
+  }
+
+  function forceCursorToEnd() {
+    try {
+      var len = inputBox.value.length;
+      if (inputBox.selectionStart !== len || inputBox.selectionEnd !== len) {
+        inputBox.setSelectionRange(len, len);
+      }
+    } catch (e) {}
+  }
+  ["click","mouseup","focus","select","keyup","input"].forEach(function (evt) {
+    inputBox.addEventListener(evt, function () { setTimeout(forceCursorToEnd, 0); });
+  });
+  inputBox.addEventListener("keydown", function (e) {
+    var k = e.key || "";
+    var ctrl = e.ctrlKey || e.metaKey;
+    var val = inputBox.value;
+    if (["ArrowLeft","ArrowUp","ArrowDown","Home","PageUp","PageDown"].indexOf(k) !== -1) {
+      e.preventDefault(); forceCursorToEnd(); return false;
+    }
+    if (ctrl && (k === "z" || k === "Z" || k === "y" || k === "Y")) { e.preventDefault(); return false; }
+    if (k === "Enter") { e.preventDefault(); return false; }
+    if (k === "Tab") { e.preventDefault(); return false; }
+    if (k === "Backspace") {
+      if (val.length === 0) { e.preventDefault(); return false; }
+      if (val.charAt(val.length - 1) === " ") { e.preventDefault(); return false; }
+    }
+    return true;
+  });
+  inputBox.addEventListener("drop", function (e) { e.preventDefault(); return false; });
+  inputBox.addEventListener("dragover", function (e) { e.preventDefault(); return false; });
+  inputBox.addEventListener("dragenter", function (e) { e.preventDefault(); return false; });
+
+  window.addEventListener("beforeunload", function (e) {
+    if (currentPage === "typing" && !testEnded && testStarted) {
+      e.preventDefault(); e.returnValue = ""; return "";
+    }
+  });
+
+  sbSubmit.addEventListener("click", function () {
+    if (testEnded) return;
+    var m = Math.floor(timeRemaining / 60);
+    var s = timeRemaining % 60;
+    var timeStr = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    submitMsg.textContent = "Are you sure you want to submit? Time remaining: " + timeStr;
+    submitModal.classList.add("show");
+  });
+  submitNo.addEventListener("click", function () { submitModal.classList.remove("show"); inputBox.focus(); });
+  submitYes.addEventListener("click", function () { submitModal.classList.remove("show"); finalizeTest(false); });
+
+  function evaluateTyping() {
+    var passageWords = currentPassageWords.slice();
+    var studentRaw = inputBox.value || "";
+    var studentWords = studentRaw.split(/\s+/).filter(function (w) { return w.length > 0; });
+    var correct = 0, wrong = 0, skipped = 0, review = [];
+    var compareCount = Math.min(studentWords.length, passageWords.length);
+    for (var i = 0; i < compareCount; i++) {
+      var pw = passageWords[i], sw = studentWords[i];
+      if (pw === sw) { correct++; review.push({ passage: pw, typed: sw, status: "correct" }); }
+      else { wrong++; review.push({ passage: pw, typed: sw, status: "wrong" }); }
+    }
+    for (var j = compareCount; j < passageWords.length; j++) {
+      skipped++;
+      review.push({ passage: passageWords[j], typed: "", status: "skipped" });
+    }
+    var perWord = TOTAL_MARKS / passageWords.length;
+    var marks = correct * perWord;
+    marks = Math.round(marks * 100) / 100;
+    if (marks > TOTAL_MARKS) marks = TOTAL_MARKS;
+    return { total: passageWords.length, correct: correct, wrong: wrong, skipped: skipped, marks: marks, review: review };
+  }
+
+  function finalizeTest(autoSubmitted) {
+    if (testEnded) return;
+    testEnded = true;
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    inputBox.disabled = true;
+    sbSubmit.disabled = true;
+    removeAntiCheat();
+    var result = evaluateTyping();
+    showResult(result);
+  }
+
+  function showResult(result) {
+    var isGuest = !!(verifiedStudent && verifiedStudent.guest);
+    rName.textContent = verifiedStudent.name || "Guest User";
+    if (isGuest) {
+      if (rIdWrap) rIdWrap.style.display = "none";
+    } else {
+      if (rIdWrap) rIdWrap.style.display = "";
+      rId.textContent = verifiedStudent.id;
+    }
+    rTest.textContent = toTitleCase(currentTest.title);
+    rLang.textContent = selectedLanguage === "en" ? "English" : "Hindi";
+    rDate.textContent = formatDateTime(new Date().toISOString());
+    rMarks.textContent = result.marks.toFixed(2);
+    rTotalWords.textContent = result.correct;
+    rvCorrect.textContent = result.correct;
+    rvWrong.textContent = result.wrong;
+    rvSkipped.textContent = result.skipped;
+    rvTotal.textContent = result.total;
+
+    var parts = [];
+    var len = result.review.length;
+    for (var i = 0; i < len; i++) {
+      var r = result.review[i];
+      if (i > 0) parts.push(" ");
+      if (r.status === "correct") {
+        parts.push('<span class="rw rw-correct">' + escapeHtml(r.passage) + '</span>');
+      } else if (r.status === "wrong") {
+        parts.push(
+          '<span class="rw rw-wrong">' +
+            '<span class="rw-typed">' + escapeHtml(r.typed || "—") + '</span>' +
+            '<span class="rw-arrow">→</span>' +
+            '<span class="rw-correct-word">' + escapeHtml(r.passage) + '</span>' +
+          '</span>'
+        );
+      } else {
+        parts.push('<span class="rw rw-skipped">' + escapeHtml(r.passage) + '</span>');
+      }
+    }
+    reviewParagraph.innerHTML = parts.join("");
+    reviewParagraph.scrollTop = 0;
+    reviewBuilt = true;
+
+    clearFontFromElement(reviewParagraph);
+    loadLanguageFont(selectedLanguage, function (fontName) {
+      applyFontToElement(reviewParagraph, fontName);
+    });
+
+    reviewBox.classList.remove("show");
+    if (toggleReviewText) toggleReviewText.textContent = REVIEW_LABEL_CLOSED;
+
+    showPage("result");
+  }
+
+  function resetToHome() {
+    if (idleCheckInterval) { clearInterval(idleCheckInterval); idleCheckInterval = null; }
+    inputBox.value = "";
+    inputBox.disabled = false;
+    passageBox.textContent = "";
+    clearFontFromElement(passageBox);
+    clearFontFromElement(inputBox);
+    clearFontFromElement(reviewParagraph);
+    reviewParagraph.innerHTML = "";
+    reviewBuilt = false;
+    reviewBox.classList.remove("show");
+    if (toggleReviewText) toggleReviewText.textContent = REVIEW_LABEL_CLOSED;
+    currentTest = null;
+    currentPassageWords = [];
+    timeRemaining = TEST_DURATION_SEC;
+    timerEndTime = null;
+    testStarted = false;
+    testEnded = false;
+    lastKeystrokeTime = null;
+    updateTimerDisplay();
+    verifiedStudent = null;
+    nameEl.textContent = "";
+    nameEl.style.display = "none";
+    setStatus(statusEl, "");
+    updateEnterState();
+    showPage("home");
+  }
+
+  function openAdmin() {
+    adminModal.classList.add("show");
+    adminUser.value = "";
+    adminPass.value = "";
+    setStatus(adminStatus, "");
+    setTimeout(function () { adminUser.focus(); }, 30);
+  }
+  function closeAdmin() { adminModal.classList.remove("show"); }
+
+  adminTrigger.addEventListener("click", openAdmin);
+  adminCancel.addEventListener("click", closeAdmin);
+  adminModal.addEventListener("click", function (e) { if (e.target === adminModal) closeAdmin(); });
+
+  function attemptAdminLogin() {
+    var email = adminUser.value.trim();
+    var password = adminPass.value;
+    if (!email) { setStatus(adminStatus, "Please enter your email.", "err"); return; }
+    if (!password) { setStatus(adminStatus, "Please enter your password.", "err"); return; }
+
+    setStatus(adminStatus, "Authenticating...", "");
+    adminLogin.disabled = true;
+    adminLogin.textContent = "Logging in...";
+
+    auth.signInWithEmailAndPassword(email, password)
+      .then(function () {
+        setStatus(adminStatus, "Authentication successful.", "ok");
+        adminLogin.disabled = false;
+        adminLogin.textContent = "Login";
+        setTimeout(function () {
+          closeAdmin();
+          try { refreshAdminData(); } catch (e) {}
+          showPage("admin");
+        }, 400);
+      })
+      .catch(function (error) {
+        adminLogin.disabled = false;
+        adminLogin.textContent = "Login";
+        var msg = "Login failed. Please try again.";
+        var code = error && error.code ? error.code : "";
+        if (code === "auth/invalid-email") msg = "Invalid email format.";
+        else if (code === "auth/user-not-found") msg = "No admin account found with this email.";
+        else if (code === "auth/wrong-password") msg = "Incorrect password.";
+        else if (code === "auth/invalid-credential") msg = "Invalid email or password.";
+        else if (code === "auth/invalid-login-credentials") msg = "Invalid email or password.";
+        else if (code === "auth/too-many-requests") msg = "Too many attempts. Try again later.";
+        else if (code === "auth/network-request-failed") msg = "Network error. Check your connection.";
+        setStatus(adminStatus, msg, "err");
+      });
+  }
+  adminLogin.addEventListener("click", attemptAdminLogin);
+  adminPass.addEventListener("keydown", function (e) { if (e.key === "Enter") attemptAdminLogin(); });
+  adminUser.addEventListener("keydown", function (e) { if (e.key === "Enter") adminPass.focus(); });
+  adminBack.addEventListener("click", function () { showPage("home"); });
+  adminLogout.addEventListener("click", function () {
+    showConfirm({
+      title: "Logout",
+      message: "Are you sure you want to logout from the Administrator Console?",
+      yesText: "Yes, Logout",
+      noText: "Cancel",
+      onYes: function () {
+        auth.signOut().then(function () {
+          toast("Logged out successfully.", "ok");
+          showPage("home");
+        }).catch(function (err) {
+          toast("Logout failed: " + err.message, "err");
+        });
+      }
+    });
+  });
+
+  var navItems = document.querySelectorAll(".admin-nav-item");
+  var panels = document.querySelectorAll(".admin-panel");
+  navItems.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var target = btn.getAttribute("data-panel");
+      navItems.forEach(function (b) { b.classList.remove("active"); });
+      panels.forEach(function (p) { p.classList.remove("active"); });
+      btn.classList.add("active");
+      var panel = $("panel-" + target);
+      if (panel) panel.classList.add("active");
+    });
+  });
+
+  function cleanNameInput(inputEl) {
+    var val = inputEl.value;
+    var cleaned = val.replace(/[^A-Za-z ]/g, "").toUpperCase();
+    cleaned = cleaned.replace(/\s+/g, " ");
+    if (val !== cleaned) inputEl.value = cleaned;
+  }
+  newStudentName.addEventListener("input", function () {
+    cleanNameInput(newStudentName);
+    refreshRegisterBtn();
+  });
+  newFatherName.addEventListener("input", function () {
+    cleanNameInput(newFatherName);
+    refreshRegisterBtn();
+  });
+
+  function refreshRegisterBtn() {
+    var ok = newStudentName.value.trim().length >= 2 &&
+             newFatherName.value.trim().length >= 2 &&
+             newDob.value.length > 0;
+    registerStudentBtn.disabled = !ok;
+  }
+  newDob.addEventListener("input", refreshRegisterBtn);
+  newDob.addEventListener("change", refreshRegisterBtn);
+  if (newDob) newDob.max = todayIso();
+
+  registerStudentBtn.addEventListener("click", function () {
+    var name = newStudentName.value.trim();
+    var father = newFatherName.value.trim();
+    var dob = newDob.value;
+    if (name.length < 2 || father.length < 2 || !dob) return;
+
+    var id = generateLearnerId();
+    var record = { id: id, name: name, fatherName: father, dob: dob, registeredAt: new Date().toISOString() };
+
+    registerStudentBtn.disabled = true;
+    registerStudentBtn.textContent = "Saving...";
+
+    db.ref("students/" + id).set(record)
+      .then(function () {
+        registerStudentBtn.disabled = false;
+        registerStudentBtn.textContent = "Register Student";
+        generatedIdValue.textContent = id;
+        idResult.classList.add("show");
+        copyBtnText.textContent = "Copy";
+        copyIdBtn.classList.remove("copied");
+        setStatus(registerStatus, "Student registered successfully.", "ok");
+        toast("Student registered: " + id, "ok");
+        newStudentName.value = "";
+        newFatherName.value = "";
+        newDob.value = "";
+        refreshRegisterBtn();
+        setTimeout(function () { setStatus(registerStatus, ""); }, 3500);
+      })
+      .catch(function (err) {
+        registerStudentBtn.disabled = false;
+        registerStudentBtn.textContent = "Register Student";
+        setStatus(registerStatus, "Could not save: " + err.message, "err");
+      });
+  });
+
+  copyIdBtn.addEventListener("click", function () {
+    var idText = generatedIdValue.textContent;
+    if (!idText || idText === "--------") return;
+    function done() {
+      copyBtnText.textContent = "Copied!";
+      copyIdBtn.classList.add("copied");
+      setTimeout(function () {
+        copyBtnText.textContent = "Copy";
+        copyIdBtn.classList.remove("copied");
+      }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(idText).then(done).catch(function () {
+        var ta = document.createElement("textarea");
+        ta.value = idText;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = idText;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  });
+
+  function renderStudents() {
+    if (!studentsListBody) return;
+    var html = "";
+    if (!students.length) {
+      html = '<tr class="empty-row"><td colspan="6">' +
+        emptyStateHTML({
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>',
+          heading: "No Students Registered",
+          hint: "Register the first student using the form above to get started."
+        }) +
+        '</td></tr>';
+      studentsCountLabel.textContent = "0 students registered";
+      studentsListBody.innerHTML = html;
+      return;
+    }
+    studentsCountLabel.textContent = students.length + " student" + (students.length === 1 ? "" : "s") + " registered";
+    students.slice().reverse().forEach(function (s) {
+      html +=
+        '<tr data-student-id="' + escapeHtml(s.id) + '">' +
+        '<td><strong>' + escapeHtml(s.name) + '</strong></td>' +
+        '<td><span style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-weight:600; color:var(--primary); letter-spacing:0.05em;">' + escapeHtml(s.id) + '</span></td>' +
+        '<td class="truncate" title="' + escapeHtml(s.fatherName || "—") + '">' + escapeHtml(s.fatherName || "—") + '</td>' +
+        '<td>' + escapeHtml(formatDobForDisplay(s.dob)) + '</td>' +
+        '<td>' + escapeHtml(formatDate(s.registeredAt)) + '</td>' +
+        '<td class="center"><button class="btn btn-danger-outline btn-sm" data-action="del-student">Delete</button></td>' +
+        '</tr>';
+    });
+    studentsListBody.innerHTML = html;
+  }
+
+  studentsListBody.addEventListener("click", function (e) {
+    var t = e.target.closest('button[data-action="del-student"]');
+    if (!t) return;
+    var tr = t.closest("tr");
+    var id = tr.getAttribute("data-student-id");
+    var s = students.filter(function (x) { return x.id === id; })[0];
+    if (!s) return;
+    showConfirm({
+      title: "Delete Student",
+      message: "Are you sure you want to delete " + s.name + " (" + s.id + ")? This action cannot be undone.",
+      yesText: "Delete",
+      noText: "Cancel",
+      onYes: function () {
+        db.ref("students/" + s.id).remove()
+          .then(function () { toast("Student deleted.", "ok"); })
+          .catch(function (err) { toast("Delete failed: " + err.message, "err"); });
+      }
+    });
+  });
+
+  var selectedFontLang = null;
+  function updateFontUploadBtn() {
+    var hasLang = !!selectedFontLang;
+    var hasFile = fontFile.files && fontFile.files.length > 0;
+    uploadFontBtn.disabled = !(hasLang && hasFile);
+  }
+  fontLangEn.addEventListener("change", function () {
+    if (fontLangEn.checked) { fontLangHi.checked = false; selectedFontLang = "en"; }
+    else if (!fontLangHi.checked) { selectedFontLang = null; }
+    updateFontUploadBtn();
+  });
+  fontLangHi.addEventListener("change", function () {
+    if (fontLangHi.checked) { fontLangEn.checked = false; selectedFontLang = "hi"; }
+    else if (!fontLangEn.checked) { selectedFontLang = null; }
+    updateFontUploadBtn();
+  });
+  fontFile.addEventListener("change", updateFontUploadBtn);
+
+  uploadFontBtn.addEventListener("click", function () {
+    if (!selectedFontLang) return;
+    var f = fontFile.files && fontFile.files[0];
+    if (!f) return;
+    var fname = (f.name || "").toLowerCase();
+    var validExts = [".ttf", ".otf", ".woff", ".woff2"];
+    var hasValidExt = validExts.some(function (ext) { return fname.slice(-ext.length) === ext; });
+    if (!hasValidExt) {
+      setStatus(fontStatus, "Invalid file type. Please upload TTF, OTF, WOFF, or WOFF2.", "err");
+      setTimeout(function () { setStatus(fontStatus, ""); }, 4500);
+      fontFile.value = "";
+      updateFontUploadBtn();
+      return;
+    }
+    setStatus(fontStatus, "Validating font file...", "");
+    uploadFontBtn.disabled = true;
+    uploadFontBtn.textContent = "Uploading...";
+
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var dataUrl = ev.target.result;
+      var tempName = "TypingXValidate_" + Date.now();
+      var validationFinished = false;
+      var validationTimer = setTimeout(function () {
+        if (validationFinished) return;
+        validationFinished = true;
+        uploadFontBtn.disabled = false;
+        uploadFontBtn.textContent = "Upload Font";
+        setStatus(fontStatus, "Font validation timed out.", "err");
+        setTimeout(function () { setStatus(fontStatus, ""); }, 4500);
+        fontFile.value = "";
+        updateFontUploadBtn();
+      }, 5000);
+      try {
+        var ff = new FontFace(tempName, "url(" + dataUrl + ")");
+        ff.load().then(function () {
+          if (validationFinished) return;
+          validationFinished = true;
+          clearTimeout(validationTimer);
+
+          var record = { name: f.name, dataUrl: dataUrl, uploadedAt: new Date().toISOString() };
+          db.ref("fonts/" + selectedFontLang).set(record)
+            .then(function () {
+              delete loadedFontNames[selectedFontLang];
+              var oldStyle = document.getElementById("typingx-active-font-" + selectedFontLang);
+              if (oldStyle) oldStyle.remove();
+              uploadFontBtn.disabled = false;
+              uploadFontBtn.textContent = "Upload Font";
+              setStatus(fontStatus, "Font uploaded successfully for " + (selectedFontLang === "en" ? "English" : "Hindi") + ".", "ok");
+              toast("Font uploaded.", "ok");
+              fontFile.value = "";
+              updateFontUploadBtn();
+              setTimeout(function () { setStatus(fontStatus, ""); }, 3000);
+            })
+            .catch(function (err) {
+              uploadFontBtn.disabled = false;
+              uploadFontBtn.textContent = "Upload Font";
+              setStatus(fontStatus, "Upload failed: " + err.message + " (Font may be too large)", "err");
+              setTimeout(function () { setStatus(fontStatus, ""); }, 5500);
+              fontFile.value = "";
+              updateFontUploadBtn();
+            });
+        }).catch(function () {
+          if (validationFinished) return;
+          validationFinished = true;
+          clearTimeout(validationTimer);
+          uploadFontBtn.disabled = false;
+          uploadFontBtn.textContent = "Upload Font";
+          setStatus(fontStatus, "Invalid or corrupted font file.", "err");
+          setTimeout(function () { setStatus(fontStatus, ""); }, 4500);
+          fontFile.value = "";
+          updateFontUploadBtn();
+        });
+      } catch (e) {
+        if (validationFinished) return;
+        validationFinished = true;
+        clearTimeout(validationTimer);
+        uploadFontBtn.disabled = false;
+        uploadFontBtn.textContent = "Upload Font";
+        setStatus(fontStatus, "Invalid font file. Could not process.", "err");
+        setTimeout(function () { setStatus(fontStatus, ""); }, 4500);
+        fontFile.value = "";
+        updateFontUploadBtn();
+      }
+    };
+    reader.onerror = function () {
+      uploadFontBtn.disabled = false;
+      uploadFontBtn.textContent = "Upload Font";
+      setStatus(fontStatus, "Could not read the selected font file.", "err");
+      setTimeout(function () { setStatus(fontStatus, ""); }, 3500);
+      fontFile.value = "";
+      updateFontUploadBtn();
+    };
+    reader.readAsDataURL(f);
+  });
+
+  function renderFonts() {
+    if (!fontsListBody) return;
+    var keys = ["en", "hi"].filter(function (k) { return fonts[k] && fonts[k].dataUrl; });
+    var html = "";
+    if (!keys.length) {
+      html = '<tr class="empty-row"><td colspan="4">' +
+        emptyStateHTML({
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>',
+          heading: "No Custom Fonts Uploaded",
+          hint: "Upload a TTF, OTF, WOFF, or WOFF2 font for English or Hindi above."
+        }) +
+        '</td></tr>';
+      fontsListBody.innerHTML = html;
+      return;
+    }
+    keys.forEach(function (k) {
+      var rec = fonts[k];
+      var langName = k === "en" ? "English" : "Hindi";
+      html +=
+        '<tr data-font-lang="' + k + '">' +
+        '<td><strong>' + langName + '</strong></td>' +
+        '<td class="truncate" title="' + escapeHtml(rec.name || "font") + '">' + escapeHtml(rec.name || "font") + '</td>' +
+        '<td>' + escapeHtml(formatDate(rec.uploadedAt)) + '</td>' +
+        '<td class="center"><button class="btn btn-danger-outline btn-sm" data-action="del-font">Delete</button></td>' +
+        '</tr>';
+    });
+    fontsListBody.innerHTML = html;
+  }
+
+  fontsListBody.addEventListener("click", function (e) {
+    var t = e.target.closest('button[data-action="del-font"]');
+    if (!t) return;
+    var tr = t.closest("tr");
+    var lang = tr.getAttribute("data-font-lang");
+    var langName = lang === "en" ? "English" : "Hindi";
+    showConfirm({
+      title: "Delete Font",
+      message: "Remove the custom " + langName + " font? The app will fall back to the system font.",
+      yesText: "Delete",
+      noText: "Cancel",
+      onYes: function () {
+        db.ref("fonts/" + lang).remove()
+          .then(function () {
+            delete loadedFontNames[lang];
+            var oldStyle = document.getElementById("typingx-active-font-" + lang);
+            if (oldStyle) oldStyle.remove();
+            toast("Font deleted.", "ok");
+          })
+          .catch(function (err) { toast("Delete failed: " + err.message, "err"); });
+      }
+    });
+  });
+
+  var selectedTestLang = null;
+  var currentMode = "upload";
+  var adminTestsPage = 1;
+
+  function updateUploadBtnState() {
+    var hasLang = !!selectedTestLang;
+    var hasTitle = testTitle.value.trim().length > 0;
+    if (currentMode === "upload") {
+      var hasFile = testFile.files && testFile.files.length > 0;
+      uploadTestBtn.disabled = !(hasLang && hasTitle && hasFile);
+      saveWrittenTestBtn.disabled = true;
+    } else {
+      var hasContent = writeContent.value.trim().length > 0;
+      saveWrittenTestBtn.disabled = !(hasLang && hasTitle && hasContent);
+      uploadTestBtn.disabled = true;
+    }
+  }
+  function switchMode(mode) {
+    currentMode = mode;
+    if (mode === "upload") {
+      modeUploadBtn.style.background = "var(--primary)";
+      modeUploadBtn.style.color = "#ffffff";
+      modeWriteBtn.style.background = "transparent";
+      modeWriteBtn.style.color = "var(--text-2)";
+      paneUpload.style.display = "block";
+      paneWrite.style.display = "none";
+    } else {
+      modeWriteBtn.style.background = "var(--primary)";
+      modeWriteBtn.style.color = "#ffffff";
+      modeUploadBtn.style.background = "transparent";
+      modeUploadBtn.style.color = "var(--text-2)";
+      paneWrite.style.display = "block";
+      paneUpload.style.display = "none";
+      if (selectedTestLang) applyFontToWriteTextarea(selectedTestLang);
+    }
+    updateUploadBtnState();
+  }
+  var adminWriteFontLoadId = 0;
+  function applyFontToWriteTextarea(lang) {
+    if (!writeContent) return;
+    var rec = fonts[lang];
+    if (!rec || !rec.dataUrl) { clearFontFromElement(writeContent); return; }
+    var unique = "TypingXWriteFont_" + lang + "_" + (++adminWriteFontLoadId);
+    try {
+      var ff = new FontFace(unique, "url(" + rec.dataUrl + ")");
+      applyFontToElement(writeContent, unique);
+      ff.load().then(function (loaded) {
+        document.fonts.add(loaded);
+        applyFontToElement(writeContent, unique);
+      }).catch(function () { applyFontToElement(writeContent, unique); });
+    } catch (e) { applyFontToElement(writeContent, unique); }
+  }
+  modeUploadBtn.addEventListener("click", function () { switchMode("upload"); });
+  modeWriteBtn.addEventListener("click", function () { switchMode("write"); });
+  testLangEn.addEventListener("change", function () {
+    if (testLangEn.checked) { testLangHi.checked = false; selectedTestLang = "en"; }
+    else if (!testLangHi.checked) { selectedTestLang = null; }
+    if (selectedTestLang) applyFontToWriteTextarea(selectedTestLang);
+    else clearFontFromElement(writeContent);
+    updateUploadBtnState();
+  });
+  testLangHi.addEventListener("change", function () {
+    if (testLangHi.checked) { testLangEn.checked = false; selectedTestLang = "hi"; }
+    else if (!testLangEn.checked) { selectedTestLang = null; }
+    if (selectedTestLang) applyFontToWriteTextarea(selectedTestLang);
+    else clearFontFromElement(writeContent);
+    updateUploadBtnState();
+  });
+  testTitle.addEventListener("input", updateUploadBtnState);
+  testFile.addEventListener("change", updateUploadBtnState);
+
+  var writeCountTimer = null;
+  writeContent.addEventListener("input", function () {
+    updateUploadBtnState();
+    if (writeCountTimer) clearTimeout(writeCountTimer);
+    writeCountTimer = setTimeout(function () {
+      var text = writeContent.value.trim();
+      var count = text ? text.split(/\s+/).filter(Boolean).length : 0;
+      writeWordCount.textContent = count;
+    }, 120);
+  });
+
+  function isDuplicateTitle(titleNormalized, language) {
+    var key = titleNormalized.toLowerCase();
+    return tests.some(function (t) {
+      return (t.title || "").toLowerCase() === key && (t.language || "en") === language;
+    });
+  }
+
+  function saveTestRecord(titleRaw, content, source, onDone) {
+    content = String(content || "").trim();
+    if (!content) {
+      setStatus(contentStatus, "The content is empty.", "err");
+      setTimeout(function () { setStatus(contentStatus, ""); }, 3500);
+      onDone(false);
+      return;
+    }
+    var titleNormalized = toTitleCase(titleRaw);
+    if (isDuplicateTitle(titleNormalized, selectedTestLang)) {
+      var langName = selectedTestLang === "en" ? "English" : "Hindi";
+      setStatus(contentStatus, 'A ' + langName + ' test with the title "' + titleNormalized + '" already exists. Please use a different title.', "err");
+      setTimeout(function () { setStatus(contentStatus, ""); }, 5000);
+      onDone(false);
+      return;
+    }
+    var wordCount = content.split(/\s+/).filter(Boolean).length;
+    var record = {
+      id: "T" + Date.now() + Math.floor(Math.random() * 1000),
+      title: titleNormalized,
+      filename: source === "write" ? "(written in app)" : (testFile.files && testFile.files[0] ? testFile.files[0].name : "file"),
+      content: content,
+      wordCount: wordCount,
+      language: selectedTestLang,
+      source: source,
+      isFree: false,
+      uploadedAt: new Date().toISOString()
+    };
+    db.ref("tests/" + record.id).set(record)
+      .then(function () { onDone(true); })
+      .catch(function (err) {
+        setStatus(contentStatus, "Save failed: " + err.message, "err");
+        setTimeout(function () { setStatus(contentStatus, ""); }, 4500);
+        onDone(false);
+      });
+  }
+
+  uploadTestBtn.addEventListener("click", function () {
+    if (!selectedTestLang) return;
+    var titleRaw = testTitle.value.trim();
+    var f = testFile.files && testFile.files[0];
+    if (!titleRaw || !f) return;
+    uploadTestBtn.disabled = true;
+    uploadTestBtn.textContent = "Uploading...";
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var content = String(ev.target.result || "").trim();
+      saveTestRecord(titleRaw, content, "file", function (ok) {
+        uploadTestBtn.disabled = false;
+        uploadTestBtn.textContent = "Upload Test Content";
+        if (ok) {
+          setStatus(contentStatus, "Test content uploaded successfully.", "ok");
+          toast("Test uploaded.", "ok");
+          testTitle.value = "";
+          testFile.value = "";
+          updateUploadBtnState();
+          setTimeout(function () { setStatus(contentStatus, ""); }, 2500);
+        }
+      });
+    };
+    reader.onerror = function () {
+      uploadTestBtn.disabled = false;
+      uploadTestBtn.textContent = "Upload Test Content";
+      setStatus(contentStatus, "Could not read the selected file.", "err");
+    };
+    reader.readAsText(f);
+  });
+  saveWrittenTestBtn.addEventListener("click", function () {
+    if (!selectedTestLang) return;
+    var titleRaw = testTitle.value.trim();
+    var content = writeContent.value.trim();
+    if (!titleRaw || !content) return;
+    saveWrittenTestBtn.disabled = true;
+    saveWrittenTestBtn.textContent = "Saving...";
+    saveTestRecord(titleRaw, content, "write", function (ok) {
+      saveWrittenTestBtn.disabled = false;
+      saveWrittenTestBtn.textContent = "Save Test Content";
+      if (ok) {
+        setStatus(contentStatus, "Test content saved successfully.", "ok");
+        toast("Test saved.", "ok");
+        testTitle.value = "";
+        writeContent.value = "";
+        writeWordCount.textContent = "0";
+        updateUploadBtnState();
+        setTimeout(function () { setStatus(contentStatus, ""); }, 2500);
+      }
+    });
+  });
+
+  function renderTests() {
+    if (!filesListBody) return;
+    var html = "";
+    paginationControls.innerHTML = "";
+    if (!tests.length) {
+      html = '<tr class="empty-row"><td colspan="6">' +
+        emptyStateHTML({
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>',
+          heading: "No Test Files Uploaded",
+          hint: "Upload a .txt file or write content directly to create your first test."
+        }) +
+        '</td></tr>';
+      testsCountLabel.textContent = "0 tests uploaded";
+      filesListBody.innerHTML = html;
+      return;
+    }
+    testsCountLabel.textContent = tests.length + " test" + (tests.length === 1 ? "" : "s") + " uploaded";
+    var totalPages = Math.ceil(tests.length / ADMIN_TESTS_PER_PAGE);
+    if (adminTestsPage > totalPages) adminTestsPage = totalPages;
+    if (adminTestsPage < 1) adminTestsPage = 1;
+    var reversed = tests.slice().reverse();
+    var startIdx = (adminTestsPage - 1) * ADMIN_TESTS_PER_PAGE;
+    var endIdx = startIdx + ADMIN_TESTS_PER_PAGE;
+    var pageItems = reversed.slice(startIdx, endIdx);
+
+    pageItems.forEach(function (t) {
+      var lang = (t.language === "hi") ? "hi" : "en";
+      var langName = lang === "en" ? "English" : "Hindi";
+      var targetWords = WORD_TARGET[lang];
+      var srcTag = t.source === "write" ? "Written" : "File";
+      var srcBg = t.source === "write" ? "#dcfce7;color:#166534" : "#dbeafe;color:#1e40af";
+      var langBadge = lang === "en" ? "#dbeafe;color:#1e40af" : "#fef3c7;color:#92400e";
+      html +=
+        '<tr data-test-id="' + escapeHtml(t.id) + '">' +
+        '<td class="truncate" title="' + escapeHtml(toTitleCase(t.title)) + '"><strong>' + escapeHtml(toTitleCase(t.title)) + '</strong> <span style="display:inline-block; font-size:0.6rem; font-weight:700; padding:0.1rem 0.4rem; border-radius:3px; letter-spacing:0.04em; text-transform:uppercase; margin-left:0.35rem; background:' + srcBg + '">' + srcTag + '</span></td>' +
+        '<td class="center"><span style="display:inline-block; font-size:0.68rem; font-weight:700; padding:0.12rem 0.45rem; border-radius:3px; letter-spacing:0.04em; text-transform:uppercase; background:' + langBadge + '">' + langName + '</span></td>' +
+        '<td class="center" style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-weight:600; color:var(--primary);">' + targetWords + '</td>' +
+        '<td class="center">' + escapeHtml(formatDate(t.uploadedAt)) + '</td>' +
+        '<td class="center"><input type="checkbox" class="free-toggle" data-action="toggle-free" ' + (t.isFree ? "checked" : "") + ' style="width:1.05rem;height:1.05rem;cursor:pointer;accent-color:var(--primary);" aria-label="Mark as free test" /></td>' +
+        '<td class="center"><button class="btn btn-danger-outline btn-sm" data-action="del-test">Delete</button></td>' +
+        '</tr>';
+    });
+    filesListBody.innerHTML = html;
+    renderPagination(totalPages);
+  }
+
+  filesListBody.addEventListener("click", function (e) {
+    var t = e.target.closest('button[data-action="del-test"]');
+    if (!t) return;
+    var tr = t.closest("tr");
+    var id = tr.getAttribute("data-test-id");
+    var test = tests.filter(function (x) { return x.id === id; })[0];
+    if (!test) return;
+    var extra = test.isFree ? " (This test is currently visible in the Free Test Portal.)" : "";
+    showConfirm({
+      title: "Delete Test",
+      message: 'Delete test file "' + toTitleCase(test.title) + '"?' + extra + ' This action cannot be undone.',
+      yesText: "Delete",
+      noText: "Cancel",
+      onYes: function () {
+        db.ref("tests/" + id).remove()
+          .then(function () { toast("Test deleted.", "ok"); })
+          .catch(function (err) { toast("Delete failed: " + err.message, "err"); });
+      }
+    });
+  });
+
+  filesListBody.addEventListener("change", function (e) {
+    var t = e.target.closest('input[data-action="toggle-free"]');
+    if (!t) return;
+    var tr = t.closest("tr");
+    var id = tr.getAttribute("data-test-id");
+    var test = tests.filter(function (x) { return x.id === id; })[0];
+    if (!test) return;
+    db.ref("tests/" + id + "/isFree").set(t.checked)
+      .then(function () {
+        toast(t.checked ? "Test added to Free Test portal." : "Test removed from Free Test portal.", "ok");
+      })
+      .catch(function (err) {
+        toast("Update failed: " + err.message, "err");
+      });
+  });
+
+  function renderPagination(totalPages) {
+    if (totalPages <= 1) return;
+    var html = "";
+    html += '<button class="page-btn" data-page="prev" ' + (adminTestsPage === 1 ? "disabled" : "") + '>← Prev</button>';
+    var pagesToShow = getPagesToShow(adminTestsPage, totalPages);
+    pagesToShow.forEach(function (p) {
+      if (p === "...") {
+        html += '<span class="page-ellipsis">…</span>';
+      } else {
+        html += '<button class="page-btn ' + (p === adminTestsPage ? "active" : "") + '" data-page="' + p + '">' + p + '</button>';
+      }
+    });
+    html += '<button class="page-btn" data-page="next" ' + (adminTestsPage === totalPages ? "disabled" : "") + '>Next →</button>';
+    paginationControls.innerHTML = html;
+  }
+
+  paginationControls.addEventListener("click", function (e) {
+    var t = e.target.closest("button[data-page]");
+    if (!t || t.disabled) return;
+    var p = t.getAttribute("data-page");
+    if (p === "prev" && adminTestsPage > 1) adminTestsPage--;
+    else if (p === "next") adminTestsPage++;
+    else if (p !== "prev" && p !== "next") adminTestsPage = parseInt(p, 10);
+    renderTests();
+  });
+
+  function getPagesToShow(current, total) {
+    if (total <= 7) {
+      var arr = [];
+      for (var i = 1; i <= total; i++) arr.push(i);
+      return arr;
+    }
+    var result = [1];
+    if (current > 3) result.push("...");
+    var start = Math.max(2, current - 1);
+    var end = Math.min(total - 1, current + 1);
+    for (var j = start; j <= end; j++) result.push(j);
+    if (current < total - 2) result.push("...");
+    result.push(total);
+    return result;
+  }
+
+  function loadTypingSettingsToForm() {
+    if (settingFontSize) settingFontSize.value = typingSettings.fontSize;
+    if (settingLineHeight) settingLineHeight.value = typingSettings.lineHeight;
+  }
+
+  saveTypingSettingsBtn.addEventListener("click", function () {
+    var newSettings = {
+      fontSize: settingFontSize.value,
+      lineHeight: settingLineHeight.value
+    };
+    saveTypingSettingsBtn.disabled = true;
+    saveTypingSettingsBtn.textContent = "Saving...";
+    db.ref("settings").set(newSettings)
+      .then(function () {
+        saveTypingSettingsBtn.disabled = false;
+        saveTypingSettingsBtn.textContent = "Save Settings";
+        toast("Typing settings saved.", "ok");
+        setStatus(typingSettingsStatus, "Typing settings saved successfully.", "ok");
+        setTimeout(function () { setStatus(typingSettingsStatus, ""); }, 3000);
+      })
+      .catch(function (err) {
+        saveTypingSettingsBtn.disabled = false;
+        saveTypingSettingsBtn.textContent = "Save Settings";
+        setStatus(typingSettingsStatus, "Save failed: " + err.message, "err");
+        setTimeout(function () { setStatus(typingSettingsStatus, ""); }, 3500);
+      });
+  });
+
+  resetTypingSettingsBtn.addEventListener("click", function () {
+    showConfirm({
+      title: "Reset Typing Settings",
+      message: "Reset typing settings to default (XL font, Normal line spacing)?",
+      yesText: "Reset",
+      noText: "Cancel",
+      onYes: function () {
+        db.ref("settings").set({ fontSize: "1.35rem", lineHeight: "1.55" })
+          .then(function () {
+            toast("Settings reset to default.", "ok");
+            setStatus(typingSettingsStatus, "Settings reset to default.", "ok");
+            setTimeout(function () { setStatus(typingSettingsStatus, ""); }, 3000);
+          })
+          .catch(function (err) {
+            toast("Reset failed: " + err.message, "err");
+          });
+      }
+    });
+  });
+
+  function refreshAdminData() {
+    refreshRegisterBtn();
+    updateFontUploadBtn();
+    updateUploadBtnState();
+    loadTypingSettingsToForm();
+  }
+
+  loadFontStep();
+  applyFontStep();
+  refreshRegisterBtn();
+  switchMode("upload");
+  loadTypingSettingsToForm();
+
+})();
+</script>
+</body>
+</html>
