@@ -1,0 +1,4335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TypingX PRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand-darkest:#075985;
+    --brand-dark:#0369a1;
+    --brand:#0284c7;
+    --brand-light:#0ea5e9;
+    --accent:#f97316;
+    --accent-hover:#ea580c;
+    --accent-soft:#fff4ec;
+    --accent-soft-border:#fed7aa;
+    --blue-soft:#eff6ff;
+    --blue-soft-border:#bfdbfe;
+    --bg:#f8fbff;
+    --card:#ffffff;
+    --border:#dbeafe;
+    --text:#1e293b;
+    --muted:#64748b;
+    --success:#16a34a;
+    --success-bg:#ecfdf5;
+    --danger:#dc2626;
+    --danger-bg:#fef2f2;
+    --tg:#229ED9;
+    --shadow-sm:0 0.25rem 0.75rem rgba(2,132,199,.08);
+    --shadow-lg:0 0.75rem 2rem rgba(2,132,199,.14);
+    --header-h:4.2rem;
+    --typing-fs: 1.4rem;
+    --typing-lh: 1.5;
+    --test-font: 'Poppins', sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ font-size: clamp(15px, 0.9vw, 20px); }
+  body{
+    font-family:'Poppins', sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+    overflow-x:hidden;
+  }
+  button{ font-family:'Poppins', sans-serif; }
+  input, select, textarea{ font-family:'Poppins', sans-serif; }
+
+  .screen{ display:none; }
+  .screen.active{ display:flex; }
+
+  /* ============ INLINE SPINNER ============ */
+  .spin-row td{
+    text-align:center;
+    padding:2rem 1rem !important;
+  }
+  .spin-wrap{
+    display:inline-flex;
+    align-items:center;
+    gap:0.6rem;
+    color:var(--muted);
+    font-size:0.83rem;
+    font-weight:500;
+  }
+  .spinner{
+    width:1.15rem;
+    height:1.15rem;
+    border:0.16rem solid var(--blue-soft-border);
+    border-top-color: var(--brand);
+    border-radius:50%;
+    animation: spinAnim 0.7s linear infinite;
+    flex-shrink:0;
+  }
+  .spinner.sm{
+    width:0.9rem;
+    height:0.9rem;
+    border-width:0.13rem;
+  }
+  @keyframes spinAnim{
+    to{ transform: rotate(360deg); }
+  }
+
+  .mtb-overlay{
+    position:fixed; inset:0; z-index:9999;
+    background:linear-gradient(135deg, #0d2a52 0%, #12376b 100%);
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    padding:2rem; text-align:center;
+    font-family:'Poppins',sans-serif;
+  }
+  .mtb-box{ max-width:32rem; }
+  .mtb-box h1{ font-size:1.8rem; font-weight:700; margin-bottom:0.8rem; }
+  .mtb-box p{ font-size:0.95rem; line-height:1.7; opacity:0.9; }
+
+  .app-header{
+    position:fixed; top:0; left:0; right:0; height:var(--header-h); z-index:200;
+    background:linear-gradient(135deg, var(--brand-darkest) 0%, var(--brand) 55%, var(--brand-light) 100%);
+    border-bottom:0.2rem solid var(--brand-darkest);
+    box-shadow:var(--shadow-sm);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 1.75rem;
+  }
+  .brand-title{ font-size:1.15rem; font-weight:700; color:#fff; letter-spacing:0.02em; line-height:1; }
+
+  /* Animated "PRO" — visible colors on blue gradient */
+  .brand-title .brand-accent{
+    background: linear-gradient(90deg,
+      #ffffff 0%,
+      #fef08a 15%,
+      #a5f3fc 30%,
+      #fbcfe8 45%,
+      #fde68a 60%,
+      #bae6fd 75%,
+      #ffffff 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: brandShimmer 6s linear infinite;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  @keyframes brandShimmer{
+    0%{ background-position: 0% 50%; }
+    100%{ background-position: 300% 50%; }
+  }
+
+  .header-actions{ display:flex; align-items:center; gap:0.85rem; }
+  .tg-btn{
+    display:inline-flex; align-items:center; gap:0.6rem;
+    background:#fff; color:#1e293b; text-decoration:none;
+    font-size:0.82rem; font-weight:600; letter-spacing:0.02em;
+    padding:0.5rem 1.05rem 0.5rem 0.55rem; border-radius:2rem;
+    box-shadow:0 0.2rem 0.6rem rgba(0,0,0,.18);
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    white-space:nowrap;
+  }
+  .tg-btn .tg-icon{
+    width:1.4rem; height:1.4rem; border-radius:50%; background:var(--tg);
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .tg-btn .tg-icon svg{ width:0.82rem; height:0.82rem; fill:#fff; }
+  .tg-btn:hover{ background:#eff6ff; transform:translateY(-0.1rem); }
+  .admin-btn{
+    width:2.35rem; height:2.35rem; border-radius:50%;
+    background:rgba(255,255,255,0.12);
+    border:0.0625rem solid rgba(255,255,255,0.45);
+    color:#fff; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:background .18s ease, border-color .18s ease, transform .18s ease;
+  }
+  .admin-btn svg{ width:1.05rem; height:1.05rem; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .admin-btn:hover{ background:rgba(255,255,255,0.22); border-color:#fff; transform:translateY(-0.08rem); }
+
+  .app-footer{
+    background:#fff;
+    border-top:0.0625rem solid var(--border);
+    padding:1.6rem 2.5rem 1.75rem;
+  }
+  .footer-content{
+    max-width:72rem;
+    margin:0 auto;
+    display:flex;
+    gap:2.5rem;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+  }
+  .footer-text{
+    flex:1;
+    min-width:16rem;
+    font-size:0.78rem;
+    line-height:1.85;
+    color:var(--muted);
+    text-align:justify;
+    text-justify:inter-word;
+    font-weight:400;
+  }
+  .footer-text strong{ color:var(--brand-dark); font-weight:600; }
+  .footer-qr-box{
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:0.5rem;
+  }
+  .footer-qr-img{
+    width:7rem;
+    height:7rem;
+    border:0.0625rem solid var(--border);
+    border-radius:0.4rem;
+    background:#fff;
+    padding:0.4rem;
+    object-fit:contain;
+    display:block;
+  }
+  .footer-qr-label{
+    font-size:0.64rem;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--brand-dark);
+    text-align:center;
+  }
+
+  #homeScreen.active, #testListScreen.active, #resultScreen.active{
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+
+  .home-main{
+    flex:1;
+    padding: calc(var(--header-h) + 1.5rem) 2rem 1.5rem;
+    display:flex; justify-content:center; align-items:flex-start;
+  }
+  .signin-card{
+    width:100%; max-width:44rem; background:var(--card);
+    border:0.0625rem solid var(--border); border-radius:0.75rem;
+    box-shadow:var(--shadow-lg);
+    padding:1.5rem 2rem 1.6rem;
+    position:relative; overflow:hidden;
+  }
+  .signin-card::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:0.25rem;
+    background:linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-light) 50%, var(--accent) 100%);
+  }
+  .signin-title{ font-size:1.25rem; font-weight:700; color:var(--brand-dark); text-align:center; }
+  .signin-sub{ margin-top:0.2rem; text-align:center; font-size:0.8rem; color:var(--muted); }
+  .section-divider{ height:0.0625rem; background:var(--border); margin:1rem 0 1rem; }
+
+  .step-block + .step-block{ margin-top:1rem; }
+  .step-head{ display:flex; align-items:center; gap:0.6rem; margin-bottom:0.6rem; }
+  .step-num{
+    width:1.4rem; height:1.4rem; border-radius:50%;
+    background:var(--accent-soft); color:var(--accent-hover);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:0.72rem; font-weight:700;
+    border:0.0625rem solid var(--accent-soft-border); flex-shrink:0;
+  }
+  .step-label{ font-size:0.88rem; font-weight:600; color:var(--brand-dark); }
+
+  .id-row{ display:flex; gap:0.5rem; align-items:stretch; }
+  .id-input{
+    flex:1; font-size:0.9rem; font-weight:500; letter-spacing:0.14em;
+    color:var(--text); background:#fff; border:0.0625rem solid var(--border);
+    border-radius:0.4rem; padding:0.65rem 0.9rem; outline:none;
+    transition:border-color .18s ease, box-shadow .18s ease; text-transform:uppercase;
+  }
+  .id-input::placeholder{ letter-spacing:0.03em; text-transform:none; font-weight:400; color:#94a3b8; }
+  .id-input:focus{ border-color:var(--brand-light); box-shadow:0 0 0 0.16rem rgba(14,165,233,.18); }
+  .verify-btn{
+    font-size:0.8rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:#fff;
+    background:linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+    border:none; border-radius:0.4rem; padding:0 1.4rem;
+    cursor:pointer; box-shadow:0 0.2rem 0.6rem rgba(14,165,233,.3);
+    transition:transform .18s ease, filter .18s ease;
+    display:inline-flex; align-items:center; gap:0.4rem; justify-content:center;
+  }
+  .verify-btn:hover{ transform:translateY(-0.06rem); filter:brightness(1.06); }
+  .verify-btn:disabled{ opacity:0.7; cursor:not-allowed; }
+  .verify-btn .spinner{
+    border-color: rgba(255,255,255,0.4);
+    border-top-color:#fff;
+  }
+
+  .welcome-line{
+    margin-top:0.7rem;
+    display:none;
+    align-items:center;
+    gap:0.5rem;
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--success);
+    background:var(--success-bg);
+    border:0.0625rem solid #bbf7d0;
+    border-radius:0.4rem;
+    padding:0.5rem 0.85rem;
+  }
+  .welcome-line.show{ display:flex; }
+  .welcome-line .wl-icon{
+    width:1.1rem; height:1.1rem;
+    border-radius:50%;
+    background:var(--success);
+    color:#fff;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:0.65rem; font-weight:700;
+    flex-shrink:0;
+  }
+  .welcome-line .wl-name{
+    color:var(--brand-dark);
+    font-weight:700;
+    text-transform:uppercase;
+  }
+
+  .verify-msg{
+    margin-top:0.5rem; font-size:0.78rem; font-weight:500;
+    padding:0.45rem 0.75rem; border-radius:0.35rem;
+    display:none; align-items:center; gap:0.45rem;
+  }
+  .verify-msg.show{ display:flex; }
+  .verify-msg.err{ background:var(--danger-bg); color:var(--danger); border:0.0625rem solid #fecaca; }
+  .verify-msg .tick{
+    width:0.95rem; height:0.95rem; border-radius:50%; background:var(--danger);
+    color:#fff; display:inline-flex; align-items:center; justify-content:center;
+    font-size:0.6rem; font-weight:700; flex-shrink:0;
+  }
+
+  .step-block.is-locked .step-body{ opacity:.4; pointer-events:none; user-select:none; filter:grayscale(.4); }
+  .step-block.is-locked .step-num{ background:#f1f5f9; color:#94a3b8; border-color:#e2e8f0; }
+  .step-block.is-locked .step-label{ color:#94a3b8; }
+
+  .lang-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; }
+  .lang-option{
+    display:flex; align-items:center; gap:0.6rem;
+    padding:0.7rem 0.9rem; background:#fff;
+    border:0.0625rem solid var(--border); border-radius:0.45rem;
+    cursor:pointer; transition:border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    user-select:none;
+  }
+  .lang-option:hover{ border-color:var(--blue-soft-border); background:#f8fbff; }
+  .lang-option input{ display:none; }
+  .lang-box{
+    width:1.1rem; height:1.1rem; border-radius:0.25rem;
+    border:0.11rem solid #cbd5e1; background:#fff;
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0; position:relative;
+  }
+  .lang-box::after{
+    content:""; width:0.5rem; height:0.28rem;
+    border-left:0.13rem solid #fff; border-bottom:0.13rem solid #fff;
+    transform:rotate(-45deg) translate(0.02rem,-0.08rem);
+    opacity:0; transition:opacity .15s ease;
+  }
+  .lang-option input:checked + .lang-box{ background:var(--accent); border-color:var(--accent); }
+  .lang-option input:checked + .lang-box::after{ opacity:1; }
+  .lang-option.is-selected{ border-color:var(--accent); background:var(--accent-soft); box-shadow:0 0 0 0.12rem rgba(249,115,22,.15); }
+  .lang-name{ font-size:0.88rem; font-weight:600; color:var(--brand-dark); }
+
+  .next-row{ margin-top:1.2rem; display:flex; justify-content:center; }
+  .next-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:0.6rem;
+    font-size:0.9rem; font-weight:600; letter-spacing:0.1em;
+    text-transform:uppercase; color:#fff;
+    background:linear-gradient(135deg, var(--accent) 0%, #fb923c 55%, #fdba74 100%);
+    border:none; border-radius:0.55rem; padding:0.85rem 2.8rem;
+    min-width:18rem; cursor:pointer; position:relative; overflow:hidden;
+    box-shadow:0 0.4rem 1.1rem rgba(249,115,22,.35);
+    transition:transform .2s ease, filter .2s ease;
+  }
+  .next-btn:hover:not(:disabled){ transform:translateY(-0.12rem); filter:brightness(1.05); }
+  .next-btn .btn-icon{
+    width:1.2rem; height:1.2rem; border-radius:50%;
+    background:rgba(255,255,255,.25);
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .next-btn .btn-icon svg{ width:0.72rem; height:0.72rem; stroke:#fff; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; fill:none; }
+  .next-btn:disabled{
+    cursor:not-allowed;
+    background:linear-gradient(135deg, #cbd5e1 0%, #e2e8f0 100%);
+    box-shadow:none; opacity:.75;
+  }
+
+  .free-test-strip{
+    margin-top:1.2rem;
+    padding:0.9rem 1.1rem;
+    border-radius:0.55rem;
+    background:linear-gradient(135deg, #ecfeff 0%, #f0f9ff 100%);
+    border:0.0625rem dashed #67e8f9;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:0.8rem; flex-wrap:wrap;
+  }
+  .free-test-strip .ft-left{ display:flex; align-items:center; gap:0.7rem; }
+  .free-test-strip .ft-icon{
+    width:2rem; height:2rem; border-radius:50%;
+    background:linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color:#fff; display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .free-test-strip .ft-icon svg{ width:1rem; height:1rem; fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .free-test-strip .ft-title{ font-size:0.85rem; font-weight:600; color:#0e7490; }
+  .free-test-strip .ft-sub{ font-size:0.72rem; color:#155e75; opacity:0.85; margin-top:0.1rem; }
+  .ft-btn{
+    display:inline-flex; align-items:center; gap:0.4rem;
+    font-size:0.78rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:#fff;
+    background:linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    border:none; border-radius:0.4rem;
+    padding:0.55rem 1.05rem; cursor:pointer;
+    transition:transform .18s ease, filter .18s ease;
+    white-space:nowrap;
+  }
+  .ft-btn:hover{ transform:translateY(-0.06rem); filter:brightness(1.06); }
+
+  .list-main{
+    flex:1;
+    padding: calc(var(--header-h) + 1.5rem) 2rem 1.5rem;
+    display:flex; justify-content:center; align-items:flex-start;
+  }
+  .list-card{
+    width:100%; max-width:72rem; background:#fff;
+    border:0.0625rem solid var(--border); border-radius:0.75rem;
+    box-shadow:var(--shadow-lg); padding:1.6rem 1.9rem 1.8rem;
+    position:relative; overflow:hidden;
+  }
+  .list-card::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:0.25rem;
+    background:linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-light) 50%, var(--accent) 100%);
+  }
+  .list-head{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; flex-wrap:wrap;
+  }
+  .list-title{ font-size:1.3rem; font-weight:700; color:var(--brand-dark); }
+  .list-sub{ font-size:0.8rem; color:var(--muted); margin-top:0.15rem; }
+  .list-back{
+    display:inline-flex; align-items:center; gap:0.4rem;
+    font-size:0.78rem; font-weight:600; letter-spacing:0.05em;
+    text-transform:uppercase; color:var(--brand-dark);
+    background:#fff; border:0.0625rem solid #cbd5e1;
+    border-radius:0.4rem; padding:0.55rem 1rem; cursor:pointer;
+    transition:background .18s ease;
+  }
+  .list-back:hover{ background:#f1f5f9; }
+
+  .test-table{ width:100%; border-collapse:collapse; margin-top:1.2rem; }
+  .test-table thead th{
+    text-align:left; font-size:0.68rem; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--muted); background:#f8fbff;
+    padding:0.7rem 0.7rem;
+    border-bottom:0.0625rem solid var(--border);
+    white-space:nowrap;
+  }
+  .test-table tbody td{
+    padding:0.85rem 0.7rem;
+    font-size:0.83rem;
+    border-bottom:0.0625rem solid #f1f5f9;
+    vertical-align:middle;
+  }
+  .test-table tbody tr:hover{ background:#fafdff; }
+  .test-table .sno{
+    font-weight:600; color:var(--brand-dark);
+    width:3rem; text-align:center;
+  }
+  .test-table .title-cell{ font-weight:500; }
+  .test-table .empty-row td{
+    text-align:center; color:var(--muted); padding:2.5rem 1rem;
+    font-size:0.88rem;
+  }
+  .start-btn-row{
+    display:inline-flex; align-items:center; gap:0.4rem;
+    font-size:0.78rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:#fff;
+    background:linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+    border:none; border-radius:0.4rem;
+    padding:0.55rem 1.1rem; cursor:pointer;
+    transition:transform .18s ease, filter .18s ease;
+    box-shadow:0 0.2rem 0.5rem rgba(14,165,233,.28);
+  }
+  .start-btn-row:hover{ transform:translateY(-0.06rem); filter:brightness(1.06); }
+  .start-btn-row svg{ width:0.7rem; height:0.7rem; fill:currentColor; }
+
+  #typingScreen.active{
+    display:flex;
+    height:100vh;
+    width:100vw;
+    overflow:hidden;
+    background:#fcfdff;
+  }
+  .typing-layout{
+    display:flex;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#fcfdff;
+  }
+
+  .typing-sidebar{
+    width:12rem;
+    flex-shrink:0;
+    background:#ffffff;
+    border-right:0.0625rem solid #000;
+    display:flex;
+    flex-direction:column;
+    padding:0.75rem 0.7rem;
+    gap:0.65rem;
+    overflow-y:auto;
+  }
+  .sidebar-app-name{
+    font-size:0.82rem;
+    font-weight:700;
+    color:var(--brand-dark);
+    letter-spacing:0.02em;
+    padding-bottom:0.55rem;
+    border-bottom:0.0625rem solid #e5e5e5;
+    text-align:center;
+  }
+  .sidebar-app-name span{ color:var(--accent-hover); }
+
+  .user-block{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:0.4rem;
+    padding-bottom:0.7rem;
+    border-bottom:0.0625rem solid #e5e5e5;
+  }
+  .avatar{
+    width:2.4rem;
+    height:2.4rem;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-light) 100%);
+    color:#ffffff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    box-shadow:0 0.25rem 0.6rem rgba(2,132,199,.25);
+  }
+  .avatar svg{
+    width:1.2rem; height:1.2rem;
+    fill:none; stroke:#ffffff;
+    stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .user-name{
+    font-size:0.72rem;
+    font-weight:700;
+    color:var(--brand-dark);
+    text-align:center;
+    line-height:1.25;
+    word-break:break-word;
+    max-width:100%;
+  }
+  .user-id{
+    font-size:0.56rem;
+    font-weight:600;
+    letter-spacing:0.1em;
+    color:var(--muted);
+    text-transform:uppercase;
+    padding:0.12rem 0.5rem;
+    background:var(--blue-soft);
+    border:0.0625rem solid var(--blue-soft-border);
+    border-radius:0.25rem;
+    word-break:break-all;
+    text-align:center;
+  }
+  .user-id.guest{
+    background:#f1f5f9;
+    border-color:#cbd5e1;
+    color:#64748b;
+  }
+
+  .sidebar-section{
+    display:flex;
+    flex-direction:column;
+    gap:0.35rem;
+  }
+  .section-label{
+    font-size:0.58rem;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .font-info{
+    display:flex;
+    align-items:center;
+    gap:0.4rem;
+    font-size:0.68rem;
+    font-weight:600;
+    color:var(--brand-dark);
+    background:var(--accent-soft);
+    border:0.0625rem solid var(--accent-soft-border);
+    border-left:0.2rem solid var(--accent);
+    border-radius:0.35rem;
+    padding:0.42rem 0.5rem;
+    word-break:break-word;
+    line-height:1.3;
+  }
+  .font-info svg{
+    width:0.8rem; height:0.8rem;
+    stroke:var(--accent-hover); stroke-width:2;
+    fill:none; stroke-linecap:round; stroke-linejoin:round;
+    flex-shrink:0;
+  }
+  .font-info.no-font{
+    background:#f1f5f9;
+    border-color:#cbd5e1;
+    border-left-color:#94a3b8;
+    color:#475569;
+  }
+
+  .fs-controls{
+    display:flex;
+    align-items:center;
+    gap:0.3rem;
+    background:#f8fafc;
+    border:0.0625rem solid var(--border);
+    border-radius:0.35rem;
+    padding:0.25rem;
+  }
+  .fs-btn{
+    width:1.7rem; height:1.7rem;
+    border-radius:0.3rem;
+    background:#ffffff;
+    border:0.0625rem solid #cbd5e1;
+    color:var(--brand-dark);
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.78rem;
+    font-weight:700;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .fs-btn:hover{ background:var(--blue-soft); border-color:var(--brand-light); }
+  .fs-btn:active{ transform:scale(0.96); }
+  .fs-display{
+    flex:1;
+    text-align:center;
+    font-size:0.74rem;
+    font-weight:700;
+    color:var(--brand-dark);
+  }
+
+  .bs-mode-group{ display:flex; flex-direction:column; gap:0.3rem; }
+  .bs-mode{
+    display:flex; align-items:center; gap:0.45rem;
+    padding:0.42rem 0.55rem;
+    background:#f8fafc;
+    border:0.0625rem solid #e2e8f0;
+    border-radius:0.35rem;
+    cursor:pointer;
+    font-size:0.68rem;
+    font-weight:600;
+    color:var(--text);
+    user-select:none;
+    line-height:1.2;
+  }
+  .bs-mode:hover{ background:#eff6ff; }
+  .bs-mode input{ display:none; }
+  .bs-mode .bs-dot{
+    width:0.85rem; height:0.85rem;
+    border-radius:50%;
+    border:0.1rem solid #cbd5e1;
+    background:#fff;
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0; position:relative;
+  }
+  .bs-mode .bs-dot::after{
+    content:"";
+    width:0.35rem; height:0.35rem;
+    border-radius:50%;
+    background:#fff;
+    opacity:0;
+  }
+  .bs-mode input:checked + .bs-dot{ background:var(--accent); border-color:var(--accent); }
+  .bs-mode input:checked + .bs-dot::after{ opacity:1; }
+  .bs-mode:has(input:checked){
+    background:var(--accent-soft);
+    border-color:var(--accent-soft-border);
+    color:var(--accent-hover);
+  }
+  .bs-mode.is-disabled{ opacity:0.5; cursor:not-allowed; pointer-events:none; }
+
+  .sidebar-actions{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:0.4rem;
+    padding-top:0.65rem;
+    border-top:0.0625rem solid #e5e5e5;
+  }
+  .sidebar-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.35rem;
+    width:100%;
+    font-size:0.66rem;
+    font-weight:600;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    padding:0.52rem 0.5rem;
+    border-radius:0.4rem;
+    cursor:pointer;
+    border:none;
+    line-height:1.15;
+  }
+  .sidebar-btn svg{
+    width:0.8rem; height:0.8rem;
+    stroke:currentColor; stroke-width:2.2;
+    fill:none; stroke-linecap:round; stroke-linejoin:round;
+    flex-shrink:0;
+  }
+  .fs-toggle{
+    background:#ffffff;
+    color:var(--brand-dark);
+    border:0.0625rem solid #cbd5e1;
+  }
+  .fs-toggle:hover:not(:disabled){ background:var(--blue-soft); border-color:var(--brand-light); }
+  .fs-toggle:disabled{ opacity:0.45; cursor:not-allowed; background:#f1f5f9; color:#94a3b8; }
+  .submit-btn{
+    background:linear-gradient(135deg, var(--accent) 0%, #fb923c 100%);
+    color:#ffffff;
+    box-shadow:0 0.3rem 0.75rem rgba(249,115,22,.32);
+  }
+  .submit-btn:hover{ transform:translateY(-0.05rem); filter:brightness(1.05); }
+  .submit-btn svg{ stroke:#ffffff; }
+
+  .typing-main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding:0.7rem 1.1rem;
+    gap:0.5rem;
+    min-width:0;
+    overflow:hidden;
+    background:#fcfdff;
+  }
+
+  .timer-line{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.5rem;
+    padding:0.2rem 1rem 0;
+    flex-shrink:0;
+    font-size:0.95rem;
+    color:#0f172a;
+  }
+  .timer-line .timer-label{ font-weight:500; }
+  .timer-line .timer-value{
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:0.12em;
+    color:#0f172a;
+    font-variant-numeric: tabular-nums;
+    min-width:4rem;
+    text-align:left;
+  }
+  .timer-line .timer-value.warn{
+    color:#dc2626;
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.55; } }
+
+  .passage-box{
+    flex:2;
+    min-height:0;
+    background:#ffffff;
+    color:#000000;
+    border:0.0625rem solid #000000;
+    border-radius:0;
+    padding:0.9rem 1.1rem;
+    overflow-y:auto;
+    font-family: var(--test-font, 'Poppins', sans-serif);
+    font-size: var(--typing-fs, 1.4rem);
+    line-height: var(--typing-lh, 1.5);
+    white-space:pre-wrap;
+    word-break:normal;
+    overflow-wrap:normal;
+    hyphens:none;
+    caret-color: transparent;
+    user-select: none;
+    cursor: default;
+    font-weight: 400;
+  }
+
+  .typing-divider{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.65rem;
+    padding:0.15rem 0;
+    flex-shrink:0;
+    font-size:0.78rem;
+    font-weight:600;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:#475569;
+    user-select:none;
+  }
+  .typing-divider::before,
+  .typing-divider::after{
+    content:"";
+    height:0.0625rem;
+    flex:0 0 3rem;
+    background:#94a3b8;
+  }
+
+  .typing-box{
+    flex:1;
+    min-height:0;
+    background:#ffffff;
+    border:0.0625rem solid #000000;
+    border-radius:0;
+    padding:0.9rem 1.1rem;
+    display:flex;
+    overflow:hidden;
+    position:relative;
+  }
+  .typing-box textarea{
+    width:100%;
+    height:100%;
+    border:none;
+    outline:none;
+    resize:none;
+    background:transparent;
+    color:#000000;
+    font-family: var(--test-font, 'Poppins', sans-serif);
+    font-size: var(--typing-fs, 1.4rem);
+    line-height: var(--typing-lh, 1.5);
+    overflow:hidden;
+    caret-color:#000000;
+    padding-bottom:1.6rem;
+    font-weight: 400;
+  }
+  .typing-box textarea::placeholder{ color:#94a3b8; font-weight:400; }
+  .typing-box textarea::selection{ background: #cfe8ff; }
+
+  .result-main{
+    flex:1;
+    padding: calc(var(--header-h) + 1.5rem) 2rem 1.5rem;
+    display:flex; justify-content:center; align-items:flex-start;
+  }
+  .result-card{
+    width:100%; max-width:72rem; background:#fff;
+    border:0.0625rem solid var(--border); border-radius:0.75rem;
+    box-shadow:var(--shadow-lg); padding:1.8rem 2rem 2rem;
+    position:relative; overflow:hidden;
+  }
+  .result-card::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:0.3rem;
+    background:linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-light) 50%, var(--accent) 100%);
+  }
+  .result-title{
+    font-size:1.5rem; font-weight:700;
+    color:var(--brand-dark); text-align:center; margin-bottom:0.3rem;
+  }
+  .result-sub{
+    text-align:center; font-size:0.82rem;
+    color:var(--muted); margin-bottom:1.6rem;
+  }
+
+  .result-tables{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1.4rem;
+    margin-bottom:1.6rem;
+  }
+  .result-table-block{
+    background:#ffffff;
+    border:0.0625rem solid var(--border);
+    border-radius:0.6rem;
+    padding:1.1rem 1.35rem 1.15rem;
+  }
+  .rtb-title{
+    font-size:0.72rem; font-weight:700;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--brand-dark);
+    margin-bottom:0.85rem;
+    padding-bottom:0.6rem;
+    border-bottom:0.0625rem solid var(--border);
+  }
+  .info-table{ width:100%; border-collapse:collapse; }
+  .info-table tr{ border-bottom:0.0625rem solid #f1f5f9; }
+  .info-table tr:last-child{ border-bottom:none; }
+  .info-table th{
+    text-align:left; font-size:0.78rem; font-weight:500;
+    color:var(--muted); padding:0.62rem 0.8rem 0.62rem 0;
+    width:45%; vertical-align:middle;
+  }
+  .info-table td{
+    font-size:0.88rem; font-weight:600;
+    color:var(--text); padding:0.62rem 0;
+    vertical-align:middle; text-align:right;
+    word-break:break-word;
+  }
+
+  .comp-title{
+    font-size:1rem; font-weight:600;
+    color:var(--brand-dark);
+    margin-bottom:0.65rem;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; flex-wrap:wrap;
+  }
+  .comp-legend{ display:flex; gap:1rem; flex-wrap:wrap; }
+  .comp-legend span{
+    display:inline-flex; align-items:center; gap:0.4rem;
+    font-size:0.72rem; font-weight:500; color:var(--muted);
+  }
+  .lg-dot{ width:0.55rem; height:0.55rem; border-radius:50%; display:inline-block; }
+  .lg-dot.correct{ background:#16a34a; }
+  .lg-dot.wrong{ background:#dc2626; }
+  .lg-dot.missed{ background:#64748b; }
+
+  .comp-box{
+    background:#ffffff;
+    border:0.0625rem solid #000000;
+    border-radius:0;
+    padding:1.1rem 1.3rem;
+    max-height:24rem;
+    overflow-y:auto;
+    font-family: var(--test-font, 'Poppins', sans-serif);
+    font-size: var(--typing-fs, 1.4rem);
+    line-height: var(--typing-lh, 1.5);
+    color:#000;
+    font-weight: 400;
+  }
+  .cw{
+    display:inline;
+    padding:0;
+    margin:0;
+    background:transparent;
+    text-decoration:none;
+    font-weight: 400;
+  }
+  .cw.correct{ color:#16a34a; }
+  .cw.wrong{ color:#dc2626; }
+  .cw.wrong .cw-arrow{ color:#94a3b8; margin:0 0.28em; }
+  .cw.wrong .cw-good{ color:#0284c7; }
+  .cw.missed{ color:#64748b; }
+
+  .result-actions{
+    margin-top:1.6rem;
+    display:flex; justify-content:center;
+    gap:0.7rem; flex-wrap:wrap;
+  }
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(7,89,133,0.55);
+    display:none; align-items:center; justify-content:center;
+    z-index:500; padding:2rem;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-card{
+    width:100%; max-width:26rem; background:#fff;
+    border-radius:0.75rem; border:0.0625rem solid var(--border);
+    box-shadow:0 1.5rem 3rem rgba(7,89,133,.35);
+    padding:1.9rem 2rem 1.9rem; position:relative; overflow:hidden;
+  }
+  .modal-card::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:0.25rem;
+    background:linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-light) 50%, var(--accent) 100%);
+  }
+  .modal-card.warn::before{ background:linear-gradient(90deg, var(--danger) 0%, #f87171 100%); }
+  .modal-title{
+    display:flex; align-items:center; gap:0.65rem;
+    font-size:1.1rem; font-weight:600; color:var(--brand-dark);
+    margin-bottom:1.3rem;
+  }
+  .modal-title .lock-mini{
+    width:1.8rem; height:1.8rem; border-radius:50%;
+    background:var(--accent-soft); color:var(--accent-hover);
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .modal-title .lock-mini svg{ width:0.9rem; height:0.9rem; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .modal-title .lock-mini.danger{ background:var(--danger-bg); color:var(--danger); font-weight:800; font-size:1rem; }
+  .field{ display:block; margin-bottom:1rem; }
+  .field span{
+    display:block; font-size:0.75rem; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:0.4rem;
+  }
+  .field input{
+    width:100%; font-size:0.92rem; color:var(--text);
+    background:#fff; border:0.0625rem solid var(--border);
+    border-radius:0.4rem; padding:0.7rem 0.9rem; outline:none;
+    transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  .field input:focus{
+    border-color:var(--brand-light); box-shadow:0 0 0 0.16rem rgba(14,165,233,.18);
+  }
+  .modal-msg{
+    font-size:0.8rem; font-weight:500; padding:0.5rem 0.75rem;
+    border-radius:0.35rem; margin-bottom:0.9rem; display:none;
+  }
+  .modal-msg.show{ display:block; }
+  .modal-msg.err{ background:var(--danger-bg); color:var(--danger); border:0.0625rem solid #fecaca; }
+  .modal-msg.ok{ background:var(--success-bg); color:var(--success); border:0.0625rem solid #bbf7d0; }
+  .confirm-text{ font-size:0.88rem; color:var(--text); line-height:1.6; margin-bottom:0.3rem; }
+  .confirm-text strong{ color:var(--brand-dark); }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.3rem; }
+  .btn-ghost{
+    font-size:0.82rem; font-weight:600; letter-spacing:0.05em;
+    text-transform:uppercase; color:var(--brand-dark);
+    background:#fff; border:0.0625rem solid #cbd5e1;
+    border-radius:0.4rem; padding:0.65rem 1.2rem;
+    cursor:pointer; transition:background .18s ease;
+  }
+  .btn-ghost:hover{ background:#f1f5f9; }
+  .btn-primary{
+    font-size:0.82rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:#fff;
+    background:linear-gradient(135deg, var(--accent) 0%, #fb923c 100%);
+    border:0.0625rem solid var(--accent);
+    border-radius:0.4rem; padding:0.65rem 1.4rem;
+    cursor:pointer; box-shadow:0 0.25rem 0.7rem rgba(249,115,22,.32);
+    transition:transform .18s ease, filter .18s ease;
+    display:inline-flex; align-items:center; gap:0.4rem; justify-content:center;
+  }
+  .btn-primary:hover{ transform:translateY(-0.06rem); filter:brightness(1.05); }
+  .btn-primary:disabled{ opacity:0.7; cursor:not-allowed; }
+  .btn-primary .spinner{
+    border-color: rgba(255,255,255,0.4);
+    border-top-color:#fff;
+  }
+  .btn-danger{
+    font-size:0.82rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:#fff;
+    background:linear-gradient(135deg, var(--danger) 0%, #ef4444 100%);
+    border:0.0625rem solid var(--danger);
+    border-radius:0.4rem; padding:0.65rem 1.4rem;
+    cursor:pointer; box-shadow:0 0.25rem 0.7rem rgba(220,38,38,.32);
+    transition:transform .18s ease, filter .18s ease;
+  }
+  .btn-danger:hover{ transform:translateY(-0.06rem); filter:brightness(1.06); }
+
+  #adminDashboard.active{ display:flex; flex-direction:column; min-height:100vh; background:var(--bg); }
+  .admin-header{
+    position:sticky; top:0; z-index:200;
+    height:4rem;
+    background:linear-gradient(135deg, var(--brand-darkest) 0%, var(--brand) 55%, var(--brand-light) 100%);
+    border-bottom:0.2rem solid var(--brand-darkest);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 1.75rem; box-shadow:var(--shadow-sm);
+  }
+  .admin-header-left{ display:flex; align-items:center; gap:0.85rem; }
+  .admin-badge{
+    font-size:0.68rem; font-weight:700; letter-spacing:0.2em;
+    color:#fff; background:var(--accent);
+    padding:0.3rem 0.75rem; border-radius:0.3rem;
+    text-transform:uppercase;
+  }
+  .admin-header-title{ font-size:1.05rem; font-weight:600; color:#fff; }
+  .admin-user-email{
+    font-size:0.72rem; color:rgba(255,255,255,0.8);
+    font-weight:400;
+  }
+  .logout-btn{
+    display:inline-flex; align-items:center; gap:0.5rem;
+    font-size:0.82rem; font-weight:600; letter-spacing:0.05em;
+    text-transform:uppercase; color:#fff;
+    background:rgba(255,255,255,0.12);
+    border:0.0625rem solid rgba(255,255,255,0.4);
+    border-radius:0.4rem; padding:0.5rem 1.1rem;
+    cursor:pointer; transition:background .18s ease;
+  }
+  .logout-btn:hover{ background:rgba(255,255,255,0.22); }
+
+  .admin-body{ flex:1; display:grid; grid-template-columns: 17rem 1fr; }
+  .admin-sidebar{
+    background:#fff; border-right:0.0625rem solid var(--border);
+    padding:1.5rem 0.85rem;
+    display:flex; flex-direction:column; gap:0.35rem;
+    position:sticky; top:4rem; align-self:start;
+    height:calc(100vh - 4rem); overflow-y:auto;
+  }
+  .sidebar-heading{
+    font-size:0.68rem; font-weight:600; letter-spacing:0.18em;
+    color:var(--muted); text-transform:uppercase;
+    padding:0 0.8rem 0.7rem;
+  }
+  .tab-btn{
+    display:flex; align-items:center; gap:0.75rem;
+    width:100%; text-align:left;
+    padding:0.85rem 0.95rem;
+    background:transparent; border:none;
+    border-radius:0.5rem; cursor:pointer;
+    font-size:0.88rem; font-weight:500;
+    color:var(--text);
+  }
+  .tab-btn svg{ width:1.1rem; height:1.1rem; stroke:currentColor; stroke-width:1.9; fill:none; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+  .tab-btn:hover{ background:#f1f5f9; }
+  .tab-btn.active{
+    background:linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 100%);
+    color:#fff;
+    box-shadow:0 0.3rem 0.8rem rgba(2,132,199,.25);
+  }
+
+  .admin-content{ padding:2rem 2.5rem 3rem; overflow-x:hidden; min-width:0; }
+  .tab-pane{ display:none; }
+  .tab-pane.active{ display:block; }
+
+  .pane-title{ font-size:1.35rem; font-weight:700; color:var(--brand-dark); }
+  .pane-sub{ margin-top:0.3rem; font-size:0.85rem; color:var(--muted); }
+
+  .panel{
+    background:#fff; border:0.0625rem solid var(--border);
+    border-radius:0.75rem; box-shadow:var(--shadow-sm);
+    padding:1.6rem 1.75rem 1.75rem;
+    margin-top:1.5rem;
+  }
+  .panel-title{
+    font-size:1rem; font-weight:600; color:var(--brand-dark);
+    margin-bottom:1.1rem; display:flex; align-items:center; gap:0.55rem;
+    padding-bottom:0.85rem; border-bottom:0.0625rem solid var(--border);
+  }
+  .panel-title .dot{ width:0.5rem; height:0.5rem; border-radius:50%; background:var(--accent); }
+
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .form-grid.full{ grid-template-columns:1fr; }
+  .form-field{ display:flex; flex-direction:column; }
+  .form-field.span2{ grid-column:1 / -1; }
+  .form-field label{
+    font-size:0.75rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:0.4rem;
+  }
+  .form-field input[type="text"],
+  .form-field input[type="tel"],
+  .form-field input[type="number"],
+  .form-field select,
+  .form-field textarea{
+    font-size:0.9rem; color:var(--text);
+    background:#fff; border:0.0625rem solid var(--border);
+    border-radius:0.45rem; padding:0.7rem 0.9rem; outline:none;
+    transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  .form-field textarea{ resize:vertical; min-height:9rem; line-height:1.7; }
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus{
+    border-color:var(--brand-light);
+    box-shadow:0 0 0 0.16rem rgba(14,165,233,.18);
+  }
+  .form-field input[type="file"]{
+    font-size:0.85rem; color:var(--text);
+    background:#f8fbff; border:0.0625rem dashed var(--brand-light);
+    border-radius:0.45rem; padding:0.8rem 0.95rem; cursor:pointer;
+  }
+
+  .dob-group{ display:grid; grid-template-columns:1fr 1.3fr 1fr; gap:0.5rem; }
+  .dob-select{ position:relative; display:block; }
+  .dob-select select{
+    width:100%;
+    appearance:none; -webkit-appearance:none;
+    font-size:0.9rem; font-weight:500;
+    color:var(--text);
+    background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border:0.0625rem solid var(--border);
+    border-radius:0.45rem;
+    padding:0.7rem 2rem 0.7rem 0.9rem;
+    outline:none; cursor:pointer;
+  }
+  .dob-select select:focus{
+    border-color:var(--brand-light);
+    box-shadow:0 0 0 0.16rem rgba(14,165,233,.18);
+  }
+  .dob-select::after{
+    content:"";
+    position:absolute; right:0.85rem; top:50%;
+    width:0.5rem; height:0.5rem;
+    border-right:0.13rem solid var(--brand-dark);
+    border-bottom:0.13rem solid var(--brand-dark);
+    transform:translateY(-70%) rotate(45deg);
+    pointer-events:none;
+  }
+
+  .gender-group{ display:flex; gap:0.6rem; }
+  .gender-opt{
+    flex:1;
+    display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
+    padding:0.7rem 1rem;
+    background:#fff; border:0.0625rem solid var(--border);
+    border-radius:0.45rem; cursor:pointer;
+    font-size:0.88rem; font-weight:500; color:var(--text);
+    user-select:none;
+  }
+  .gender-opt input{ display:none; }
+  .gender-opt .g-dot{
+    width:1.05rem; height:1.05rem; border-radius:50%;
+    border:0.11rem solid #cbd5e1; background:#fff;
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0; position:relative;
+  }
+  .gender-opt .g-dot::after{
+    content:""; width:0.45rem; height:0.45rem; border-radius:50%;
+    background:#fff; opacity:0;
+  }
+  .gender-opt input:checked + .g-dot{ background:var(--accent); border-color:var(--accent); }
+  .gender-opt input:checked + .g-dot::after{ opacity:1; }
+  .gender-opt.is-selected{ border-color:var(--accent); background:var(--accent-soft); }
+
+  .action-row{ margin-top:1.3rem; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
+  .btn-action{
+    display:inline-flex; align-items:center; gap:0.55rem;
+    font-size:0.82rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:#fff;
+    background:linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+    border:none; border-radius:0.45rem; padding:0.75rem 1.5rem;
+    cursor:pointer; box-shadow:0 0.25rem 0.7rem rgba(14,165,233,.3);
+    transition:transform .18s ease, filter .18s ease;
+  }
+  .btn-action:hover{ transform:translateY(-0.06rem); filter:brightness(1.06); }
+  .btn-action.orange{
+    background:linear-gradient(135deg, var(--accent) 0%, #fb923c 100%);
+    box-shadow:0 0.25rem 0.7rem rgba(249,115,22,.32);
+  }
+  .btn-action:disabled{ opacity:0.55; cursor:not-allowed; transform:none; filter:none; }
+  .btn-action .spinner{
+    border-color: rgba(255,255,255,0.4);
+    border-top-color:#fff;
+  }
+
+  .lang-choice-group{ display:flex; gap:0.85rem; flex-wrap:wrap; }
+  .lang-choice{
+    display:inline-flex; align-items:center; gap:0.65rem;
+    padding:0.8rem 1.25rem; background:#fff;
+    border:0.0625rem solid var(--border); border-radius:0.5rem;
+    cursor:pointer; user-select:none;
+  }
+  .lang-choice:hover{ border-color:var(--blue-soft-border); background:#f8fbff; }
+  .lang-choice input{ display:none; }
+  .lang-choice .lbox{
+    width:1.15rem; height:1.15rem; border-radius:50%;
+    border:0.11rem solid #cbd5e1; background:#fff;
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0; position:relative;
+  }
+  .lang-choice .lbox::after{
+    content:""; width:0.45rem; height:0.45rem; border-radius:50%;
+    background:#fff; opacity:0;
+  }
+  .lang-choice input:checked + .lbox{ background:var(--accent); border-color:var(--accent); }
+  .lang-choice input:checked + .lbox::after{ opacity:1; }
+  .lang-choice.is-selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .lang-choice .lname{ font-size:0.9rem; font-weight:600; color:var(--brand-dark); }
+
+  .hidden-step{ display:none; }
+  .hidden-step.show{ display:block; }
+
+  .data-table{ width:100%; border-collapse:collapse; margin-top:0.5rem; }
+  .data-table thead th{
+    text-align:left; font-size:0.68rem; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--muted); background:#f8fbff;
+    padding:0.65rem 0.7rem;
+    border-bottom:0.0625rem solid var(--border);
+    white-space:nowrap;
+  }
+  .data-table tbody td{
+    padding:0.75rem 0.7rem;
+    font-size:0.8rem;
+    border-bottom:0.0625rem solid #f1f5f9;
+    color:var(--text);
+    vertical-align:middle;
+  }
+  .data-table tbody tr:hover{ background:#fafdff; }
+  .data-table .id-cell{
+    font-weight:600; letter-spacing:0.1em; color:var(--brand-dark);
+    font-size:0.76rem;
+  }
+  .data-table .empty-row td{
+    text-align:center; color:var(--muted); padding:2rem 1rem;
+    font-style:italic; font-size:0.83rem;
+  }
+  .badge{
+    display:inline-block; font-size:0.66rem; font-weight:600;
+    letter-spacing:0.06em; text-transform:uppercase;
+    padding:0.2rem 0.55rem; border-radius:0.28rem;
+  }
+  .badge.hindi{ background:var(--accent-soft); color:var(--accent-hover); }
+  .badge.english{ background:var(--blue-soft); color:var(--brand-dark); }
+  .badge.male{ background:#dbeafe; color:#1d4ed8; }
+  .badge.female{ background:#fce7f3; color:#be185d; }
+  .badge.free{ background:#cffafe; color:#0e7490; }
+
+  .row-actions{ display:flex; gap:0.35rem; }
+  .icon-btn{
+    width:1.9rem; height:1.9rem; border-radius:0.35rem;
+    display:inline-flex; align-items:center; justify-content:center;
+    background:#fff; border:0.0625rem solid var(--border);
+    cursor:pointer; transition:background .15s ease, border-color .15s ease;
+  }
+  .icon-btn svg{ width:0.9rem; height:0.9rem; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .icon-btn.del{ color:var(--danger); }
+  .icon-btn.del:hover{ background:var(--danger-bg); border-color:#fecaca; }
+  .icon-btn.view{ color:var(--brand-dark); }
+  .icon-btn.view:hover{ background:var(--blue-soft); border-color:var(--blue-soft-border); }
+
+  .gen-box{
+    margin-top:1rem;
+    background:var(--success-bg);
+    border:0.0625rem solid #bbf7d0;
+    border-left:0.3rem solid var(--success);
+    border-radius:0.5rem;
+    padding:1rem 1.15rem;
+    display:none;
+    align-items:center; justify-content:space-between; gap:1rem;
+  }
+  .gen-box.show{ display:flex; flex-wrap:wrap; }
+  .gen-box .glabel{
+    font-size:0.7rem; font-weight:600; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--success); margin-bottom:0.2rem;
+  }
+  .gen-box .gid{
+    font-size:1.3rem; font-weight:700; letter-spacing:0.2em;
+    color:var(--brand-dark);
+  }
+  .gen-box .gname{ font-size:0.78rem; color:var(--muted); margin-top:0.2rem; }
+  .copy-btn{
+    display:inline-flex; align-items:center; gap:0.4rem;
+    font-size:0.75rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:#fff;
+    background:var(--success); border:none; border-radius:0.4rem;
+    padding:0.55rem 0.95rem; cursor:pointer;
+  }
+  .copy-btn:hover{ filter:brightness(1.05); }
+
+  .live-toolbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:0.75rem; flex-wrap:wrap; margin-bottom:0.75rem;
+  }
+  .live-toolbar-left{ display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap; }
+  .live-toolbar .toolbar-label{
+    font-size:0.75rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .live-hint{
+    font-size:0.75rem; color:var(--muted);
+    display:inline-flex; align-items:center; gap:0.4rem;
+  }
+  .live-hint.warn{ color:var(--accent-hover); font-weight:600; }
+  .word-counter{
+    display:inline-flex; align-items:center; gap:0.45rem;
+    font-size:0.78rem; font-weight:600;
+    color:var(--brand-dark);
+    background:var(--blue-soft);
+    border:0.0625rem solid var(--blue-soft-border);
+    border-radius:2rem;
+    padding:0.35rem 0.85rem;
+  }
+  .word-counter .wc-num{ font-size:0.95rem; font-weight:700; color:var(--accent-hover); }
+  .live-textarea{
+    width:100%; min-height:15rem;
+    color:var(--text); background:#fff;
+    border:0.0625rem solid var(--border);
+    border-radius:0.55rem;
+    padding:1.1rem 1.25rem;
+    outline:none; resize:vertical;
+    font-size: var(--typing-fs, 1.4rem);
+    line-height: var(--typing-lh, 1.5);
+  }
+  .live-textarea:focus{ border-color:var(--brand-light); box-shadow:0 0 0 0.18rem rgba(14,165,233,.18); }
+  .live-textarea::placeholder{
+    font-family:'Poppins',sans-serif;
+    font-size:1rem;
+    line-height:1.6;
+    font-weight:400;
+    color:#94a3b8;
+  }
+
+  .check-line{
+    display:inline-flex; align-items:center; gap:0.6rem;
+    padding:0.7rem 1rem;
+    background:#f8fbff; border:0.0625rem solid var(--border);
+    border-radius:0.5rem; cursor:pointer; user-select:none;
+    margin-top:1rem;
+  }
+  .check-line:hover{ border-color:var(--blue-soft-border); background:#eff6ff; }
+  .check-line input{ display:none; }
+  .check-box{
+    width:1.15rem; height:1.15rem; border-radius:0.28rem;
+    border:0.11rem solid #cbd5e1; background:#fff;
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0; position:relative;
+  }
+  .check-box::after{
+    content:""; width:0.5rem; height:0.28rem;
+    border-left:0.13rem solid #fff; border-bottom:0.13rem solid #fff;
+    transform:rotate(-45deg) translate(0.02rem,-0.08rem);
+    opacity:0;
+  }
+  .check-line input:checked + .check-box{ background:var(--accent); border-color:var(--accent); }
+  .check-line input:checked + .check-box::after{ opacity:1; }
+  .check-line.is-selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .check-line .chk-text{ font-size:0.85rem; font-weight:500; color:var(--brand-dark); }
+  .check-line .chk-sub{ font-size:0.72rem; color:var(--muted); margin-left:0.15rem; }
+
+  .preview-content{
+    font-size:0.95rem; line-height:1.9;
+    color:var(--text); background:#f8fbff;
+    border:0.0625rem solid var(--border);
+    border-radius:0.5rem;
+    padding:1.1rem 1.25rem;
+    max-height:24rem; overflow:auto;
+    white-space:pre-wrap; word-break:break-word;
+  }
+
+  .settings-preview{
+    margin-top:1rem;
+    background:#ffffff;
+    border:0.0625rem solid #000000;
+    padding:0.9rem 1.1rem;
+    font-family:'Poppins',sans-serif;
+    color:#000;
+    min-height:5rem;
+    white-space:pre-wrap;
+    line-height: var(--typing-lh, 1.5);
+    font-size: var(--typing-fs, 1.4rem);
+  }
+
+  .settings-lang-block{
+    border:0.0625rem solid var(--border);
+    border-radius:0.6rem;
+    padding:1.2rem 1.35rem;
+    background:#fafdff;
+  }
+  .settings-lang-block + .settings-lang-block{ margin-top:1.2rem; }
+  .settings-lang-head{
+    display:flex; align-items:center; gap:0.6rem;
+    margin-bottom:1rem;
+    padding-bottom:0.7rem;
+    border-bottom:0.0625rem solid var(--border);
+  }
+  .settings-lang-head .sl-dot{
+    width:0.55rem; height:0.55rem; border-radius:50%; background:var(--accent);
+  }
+  .settings-lang-head .sl-title{
+    font-size:0.95rem; font-weight:700; color:var(--brand-dark);
+    letter-spacing:0.02em;
+  }
+  .settings-lang-head .sl-hint{
+    font-size:0.72rem; color:var(--muted); margin-left:auto;
+  }
+
+  .qr-preview-wrap{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:13rem;
+    border:0.0625rem dashed var(--border);
+    border-radius:0.6rem;
+    background:#fafdff;
+    padding:1.2rem;
+  }
+  .qr-preview-img{
+    width:11rem;
+    height:11rem;
+    object-fit:contain;
+    border:0.0625rem solid var(--border);
+    border-radius:0.4rem;
+    background:#fff;
+    padding:0.5rem;
+    display:none;
+  }
+  .qr-preview-img.show{ display:block; }
+  .qr-preview-empty{
+    font-size:0.85rem;
+    color:var(--muted);
+    text-align:center;
+    font-style:italic;
+    line-height:1.7;
+  }
+  .qr-instruction{
+    background:#fff9e6;
+    border:0.0625rem solid #f0c040;
+    border-left:0.3rem solid #f0c040;
+    border-radius:0.5rem;
+    padding:1rem 1.2rem;
+    margin-top:1.2rem;
+    font-size:0.83rem;
+    color:#5a4a00;
+    line-height:1.7;
+  }
+  .qr-instruction .qi-title{
+    display:block;
+    color:#b07800;
+    font-size:0.72rem;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    margin-bottom:0.55rem;
+  }
+  .qr-instruction ul{
+    margin:0.4rem 0 0 1.3rem;
+    padding:0;
+  }
+  .qr-instruction li{
+    margin-bottom:0.25rem;
+  }
+  .qr-instruction li strong{ color:#b07800; }
+  .qr-status-badge{
+    display:inline-flex; align-items:center; gap:0.4rem;
+    font-size:0.72rem; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:0.3rem 0.7rem;
+    border-radius:0.3rem;
+    background:var(--blue-soft);
+    color:var(--brand-dark);
+    border:0.0625rem solid var(--blue-soft-border);
+  }
+  .qr-status-badge.default{
+    background:#f1f5f9;
+    color:#64748b;
+    border-color:#cbd5e1;
+  }
+
+  .toast{
+    position:fixed; top:1.5rem; right:1.5rem; z-index:900;
+    background:#fff; border:0.0625rem solid #bbf7d0;
+    border-left:0.3rem solid var(--success);
+    color:var(--success); font-size:0.83rem; font-weight:600;
+    padding:0.8rem 1.1rem; border-radius:0.5rem;
+    box-shadow:0 0.6rem 1.4rem rgba(2,132,199,.18);
+    display:none; align-items:center; gap:0.55rem;
+    max-width:24rem;
+  }
+  .toast.show{ display:flex; }
+  .toast.warn{ border-left-color:var(--danger); border-color:#fecaca; color:var(--danger); }
+  .toast .tick{
+    width:1.1rem; height:1.1rem; border-radius:50%;
+    background:var(--success); color:#fff;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:0.68rem; font-weight:700; flex-shrink:0;
+  }
+  .toast.warn .tick{ background:var(--danger); }
+
+  .loading-ov{
+    position:fixed; inset:0; z-index:1000;
+    background:rgba(7,89,133,0.6);
+    display:none; align-items:center; justify-content:center;
+    color:#fff; font-size:1rem; font-weight:600;
+  }
+  .loading-ov.show{ display:flex; }
+  .loading-ov .spinner{
+    border-color: rgba(255,255,255,0.35);
+    border-top-color:#fff;
+    width:1.6rem; height:1.6rem;
+    border-width:0.2rem;
+    margin-right:0.8rem;
+  }
+</style>
+</head>
+<body>
+
+  <main id="homeScreen" class="screen active">
+    <header class="app-header">
+      <div class="brand-title">TypingX <span class="brand-accent">PRO</span></div>
+      <div class="header-actions">
+        <a class="tg-btn" href="https://telegram.me/TypingXPRO" target="_blank" rel="noopener noreferrer">
+          <span class="tg-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21.94 4.6c-.27-1.14-1.28-1.72-2.34-1.32L2.9 9.86c-1.16.44-1.14 2.08.02 2.49l4.2 1.46 1.6 5.05c.34 1.06 1.7 1.34 2.42.5l2.28-2.65 4.28 3.16c.86.63 2.1.16 2.32-.88l2.92-14.4zM9.35 13.55l8.55-5.32c.28-.17.57.2.34.42l-6.86 6.53c-.2.2-.34.46-.4.75l-.36 1.86c-.06.3-.5.29-.54-.02l-.5-3.4c-.05-.3.08-.6.32-.78z"/>
+            </svg>
+          </span>
+          <span>Join Telegram</span>
+        </a>
+        <button class="admin-btn" data-admin-open type="button" aria-label="Administrator Sign In">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4.5" y="10.5" width="15" height="10" rx="1.6"/>
+            <path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/>
+            <circle cx="12" cy="15.4" r="1.15"/>
+            <path d="M12 16.4v2"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="home-main">
+      <section class="signin-card">
+        <h2 class="signin-title">Learner Sign In</h2>
+        <p class="signin-sub">Verify your Learner ID and select your preferred test language to continue.</p>
+        <div class="section-divider"></div>
+
+        <div class="step-block" id="step1">
+          <div class="step-head">
+            <span class="step-num">1</span>
+            <span class="step-label">Learner Identification</span>
+          </div>
+          <div class="id-row">
+            <input type="text" id="learnerIdInput" class="id-input" maxlength="8"
+                   autocomplete="off" spellcheck="false"
+                   placeholder="Enter 8-character Learner ID" />
+            <button type="button" id="verifyBtn" class="verify-btn">
+              <span id="verifyBtnText">Verify</span>
+            </button>
+          </div>
+          <div class="welcome-line" id="welcomeLine">
+            <span class="wl-icon">✓</span>
+            <span>Welcome, <span class="wl-name" id="welcomeName">—</span></span>
+          </div>
+          <div class="verify-msg" id="verifyMsg"></div>
+        </div>
+
+        <div class="step-block is-locked" id="step2">
+          <div class="step-head">
+            <span class="step-num">2</span>
+            <span class="step-label">Select Test Language</span>
+          </div>
+          <div class="step-body">
+            <div class="lang-grid" id="langGrid">
+              <label class="lang-option">
+                <input type="radio" name="language" value="hindi">
+                <span class="lang-box"></span>
+                <span class="lang-name">Hindi</span>
+              </label>
+              <label class="lang-option">
+                <input type="radio" name="language" value="english">
+                <span class="lang-box"></span>
+                <span class="lang-name">English</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="next-row">
+          <button type="button" id="nextBtn" class="next-btn" disabled>
+            <span>Proceed to Tests</span>
+            <span class="btn-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="13 6 19 12 13 18"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+
+        <div class="free-test-strip">
+          <div class="ft-left">
+            <span class="ft-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </span>
+            <div>
+              <div class="ft-title">Don't have a Learner ID?</div>
+              <div class="ft-sub">Try a free typing test instantly — no registration required.</div>
+            </div>
+          </div>
+          <button class="ft-btn" id="freeTestBtn" type="button">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="13 6 19 12 13 18"/>
+            </svg>
+            <span>Take Free Test</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div class="footer-text">
+          <strong>TypingX PRO</strong> is a typing test software designed to help students practice for the Rajasthan Staff Selection Board (RSSB) LDC recruitment typing test, following its exact pattern — completely free of charge. It has been developed by <strong>Neeraj Kabra</strong>, himself a student, with the assistance of Artificial Intelligence. Building and maintaining this platform requires considerable time and effort. If you wish to support this initiative, you may scan the QR code and contribute any amount via PhonePe, Paytm, Google Pay, or any other UPI application. TypingX PRO wishes you a bright and successful future.
+        </div>
+        <div class="footer-qr-box">
+          <img class="footer-qr-img js-footer-qr" src="" alt="Support QR Code" />
+          <div class="footer-qr-label">Scan to Support</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <main id="testListScreen" class="screen">
+    <header class="app-header">
+      <div class="brand-title">TypingX <span class="brand-accent">PRO</span></div>
+      <div class="header-actions">
+        <a class="tg-btn" href="https://telegram.me/TypingXPRO" target="_blank" rel="noopener noreferrer">
+          <span class="tg-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21.94 4.6c-.27-1.14-1.28-1.72-2.34-1.32L2.9 9.86c-1.16.44-1.14 2.08.02 2.49l4.2 1.46 1.6 5.05c.34 1.06 1.7 1.34 2.42.5l2.28-2.65 4.28 3.16c.86.63 2.1.16 2.32-.88l2.92-14.4zM9.35 13.55l8.55-5.32c.28-.17.57.2.34.42l-6.86 6.53c-.2.2-.34.46-.4.75l-.36 1.86c-.06.3-.5.29-.54-.02l-.5-3.4c-.05-.3.08-.6.32-.78z"/>
+            </svg>
+          </span>
+          <span>Join Telegram</span>
+        </a>
+        <button class="admin-btn" data-admin-open type="button" aria-label="Administrator Sign In">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4.5" y="10.5" width="15" height="10" rx="1.6"/>
+            <path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/>
+            <circle cx="12" cy="15.4" r="1.15"/>
+            <path d="M12 16.4v2"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="list-main">
+      <section class="list-card">
+        <div class="list-head">
+          <div>
+            <h2 class="list-title" id="testListTitle">Available Tests</h2>
+            <p class="list-sub" id="testListSub">Select a test to begin your typing assessment.</p>
+          </div>
+          <button class="list-back" id="listBackBtn" type="button">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor"
+                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"/>
+              <polyline points="11 6 5 12 11 18"/>
+            </svg>
+            <span>Back</span>
+          </button>
+        </div>
+
+        <div style="overflow-x:auto">
+          <table class="test-table">
+            <thead>
+              <tr>
+                <th style="width:4rem">S.No.</th>
+                <th>Test Title</th>
+                <th style="width:7rem">Language</th>
+                <th style="width:8rem">Total Words</th>
+                <th style="width:7rem">Duration</th>
+                <th style="width:6rem">Max Marks</th>
+                <th style="width:10rem">Upload Date</th>
+                <th style="width:7rem">Action</th>
+              </tr>
+            </thead>
+            <tbody id="testListBody">
+              <tr class="spin-row"><td colspan="8"><span class="spin-wrap"><span class="spinner"></span>Loading tests...</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div class="footer-text">
+          <strong>TypingX PRO</strong> is a typing test software designed to help students practice for the Rajasthan Staff Selection Board (RSSB) LDC recruitment typing test, following its exact pattern — completely free of charge. It has been developed by <strong>Neeraj Kabra</strong>, himself a student, with the assistance of Artificial Intelligence. Building and maintaining this platform requires considerable time and effort. If you wish to support this initiative, you may scan the QR code and contribute any amount via PhonePe, Paytm, Google Pay, or any other UPI application. TypingX PRO wishes you a bright and successful future.
+        </div>
+        <div class="footer-qr-box">
+          <img class="footer-qr-img js-footer-qr" src="" alt="Support QR Code" />
+          <div class="footer-qr-label">Scan to Support</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <main id="typingScreen" class="screen">
+    <div class="typing-layout">
+
+      <aside class="typing-sidebar">
+        <div class="sidebar-app-name">TypingX <span>PRO</span></div>
+
+        <div class="user-block">
+          <div class="avatar">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>
+            </svg>
+          </div>
+          <div class="user-name" id="tbUserName">Guest User</div>
+          <div class="user-id guest" id="tbUserId">GUEST</div>
+        </div>
+
+        <div class="sidebar-section">
+          <span class="section-label">Font</span>
+          <div class="font-info" id="tbFontInfo">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <polyline points="4 7 4 4 20 4 20 7"/>
+              <line x1="9" y1="20" x2="15" y2="20"/>
+              <line x1="12" y1="4" x2="12" y2="20"/>
+            </svg>
+            <span id="tbFontName">Poppins</span>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <span class="section-label">Size</span>
+          <div class="fs-controls">
+            <button class="fs-btn" id="fsDecBtn" type="button" aria-label="Decrease font size">A−</button>
+            <span class="fs-display" id="fsDisplay">22</span>
+            <button class="fs-btn" id="fsIncBtn" type="button" aria-label="Increase font size">A+</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <span class="section-label">Backspace Mode</span>
+          <div class="bs-mode-group" id="bsModeGroup">
+            <label class="bs-mode">
+              <input type="radio" name="bsmode" value="current" checked>
+              <span class="bs-dot"></span>
+              <span>Current Word</span>
+            </label>
+            <label class="bs-mode">
+              <input type="radio" name="bsmode" value="disabled">
+              <span class="bs-dot"></span>
+              <span>Disabled</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="sidebar-actions">
+          <button class="sidebar-btn fs-toggle" id="tbFullscreenBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+              <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
+              <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+              <path d="M8 21H5a2 2 0 0 1-2-2v-3"/>
+            </svg>
+            <span id="tbFsLabel">Fullscreen</span>
+          </button>
+
+          <button class="sidebar-btn submit-btn" id="tbSubmitBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Submit</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="typing-main">
+        <div class="timer-line">
+          <span class="timer-label">Time Remaining:</span>
+          <span class="timer-value" id="timerValue">10:00</span>
+        </div>
+
+        <div class="passage-box" id="tbPassage">Test passage will appear here.</div>
+
+        <div class="typing-divider">Type the above text below</div>
+
+        <div class="typing-box">
+          <textarea id="tbInput" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
+                    placeholder="Start typing here..."></textarea>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <main id="resultScreen" class="screen">
+    <header class="app-header">
+      <div class="brand-title">TypingX <span class="brand-accent">PRO</span></div>
+      <div class="header-actions">
+        <a class="tg-btn" href="https://telegram.me/TypingXPRO" target="_blank" rel="noopener noreferrer">
+          <span class="tg-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21.94 4.6c-.27-1.14-1.28-1.72-2.34-1.32L2.9 9.86c-1.16.44-1.14 2.08.02 2.49l4.2 1.46 1.6 5.05c.34 1.06 1.7 1.34 2.42.5l2.28-2.65 4.28 3.16c.86.63 2.1.16 2.32-.88l2.92-14.4zM9.35 13.55l8.55-5.32c.28-.17.57.2.34.42l-6.86 6.53c-.2.2-.34.46-.4.75l-.36 1.86c-.06.3-.5.29-.54-.02l-.5-3.4c-.05-.3.08-.6.32-.78z"/>
+            </svg>
+          </span>
+          <span>Join Telegram</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="result-main">
+      <section class="result-card">
+        <h2 class="result-title">Test Result</h2>
+        <p class="result-sub">Detailed performance summary of your typing test</p>
+
+        <div class="result-tables">
+          <div class="result-table-block">
+            <h3 class="rtb-title">Candidate & Test Details</h3>
+            <table class="info-table">
+              <tbody>
+                <tr><th>Student Name</th><td id="rrStudentName">—</td></tr>
+                <tr><th>Learner ID</th><td id="rrLearnerId">—</td></tr>
+                <tr><th>Test Name</th><td id="rrTestName">—</td></tr>
+                <tr><th>Language</th><td id="rrLang">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="result-table-block">
+            <h3 class="rtb-title">Performance Summary</h3>
+            <table class="info-table">
+              <tbody>
+                <tr><th>Total Words</th><td id="rrTotal">—</td></tr>
+                <tr><th>Typed Words</th><td id="rrTyped">—</td></tr>
+                <tr><th>Correct Words</th><td id="rrCorrect">—</td></tr>
+                <tr><th>Marks (out of 25)</th><td id="rrMarks">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="comp-title">
+          <span>Typed Content Review</span>
+          <div class="comp-legend">
+            <span><span class="lg-dot correct"></span> Correct</span>
+            <span><span class="lg-dot wrong"></span> Incorrect</span>
+            <span><span class="lg-dot missed"></span> Not Typed</span>
+          </div>
+        </div>
+
+        <div class="comp-box" id="rrComparison"></div>
+
+        <div class="result-actions">
+          <button class="btn-action" id="rrTestListBtn" type="button">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Back to Test List
+          </button>
+          <button class="btn-action orange" id="rrHomeBtn" type="button">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Return to Home
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div class="footer-text">
+          <strong>TypingX PRO</strong> is a typing test software designed to help students practice for the Rajasthan Staff Selection Board (RSSB) LDC recruitment typing test, following its exact pattern — completely free of charge. It has been developed by <strong>Neeraj Kabra</strong>, himself a student, with the assistance of Artificial Intelligence. Building and maintaining this platform requires considerable time and effort. If you wish to support this initiative, you may scan the QR code and contribute any amount via PhonePe, Paytm, Google Pay, or any other UPI application. TypingX PRO wishes you a bright and successful future.
+        </div>
+        <div class="footer-qr-box">
+          <img class="footer-qr-img js-footer-qr" src="" alt="Support QR Code" />
+          <div class="footer-qr-label">Scan to Support</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <main id="adminDashboard" class="screen">
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <span class="admin-badge">Admin</span>
+        <span class="admin-header-title">Control Panel</span>
+        <span class="admin-user-email" id="adminEmailShow"></span>
+      </div>
+      <button class="logout-btn" id="adminLogoutBtn" type="button">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>Logout</span>
+      </button>
+    </header>
+
+    <div class="admin-body">
+      <aside class="admin-sidebar">
+        <div class="sidebar-heading">Management</div>
+
+        <button class="tab-btn active" data-tab="students" type="button">
+          <svg viewBox="0 0 24 24">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Student Management</span>
+        </button>
+
+        <button class="tab-btn" data-tab="fonts" type="button">
+          <svg viewBox="0 0 24 24">
+            <polyline points="4 7 4 4 20 4 20 7"/>
+            <line x1="9" y1="20" x2="15" y2="20"/>
+            <line x1="12" y1="4" x2="12" y2="20"/>
+          </svg>
+          <span>Font Management</span>
+        </button>
+
+        <button class="tab-btn" data-tab="upload" type="button">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <span>Test Content Upload</span>
+        </button>
+
+        <button class="tab-btn" data-tab="files" type="button">
+          <svg viewBox="0 0 24 24">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>Manage Test Files</span>
+        </button>
+
+        <button class="tab-btn" data-tab="qr" type="button">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <line x1="14" y1="14" x2="14" y2="21"/>
+            <line x1="18" y1="14" x2="21" y2="14"/>
+            <line x1="21" y1="18" x2="21" y2="21"/>
+            <line x1="14" y1="18" x2="18" y2="18"/>
+          </svg>
+          <span>Support QR Code</span>
+        </button>
+
+        <button class="tab-btn" data-tab="display" type="button">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Display Settings</span>
+        </button>
+      </aside>
+
+      <div class="admin-content">
+
+        <section class="tab-pane active" id="pane-students">
+          <h2 class="pane-title">Student Management</h2>
+          <p class="pane-sub">Register new students with auto-generated Learner IDs, or manage existing records.</p>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Register New Student</h3>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="studentName">Full Name *</label>
+                <input type="text" id="studentName" placeholder="Enter student's full name" autocomplete="off" />
+              </div>
+              <div class="form-field">
+                <label for="studentFather">Father's Name *</label>
+                <input type="text" id="studentFather" placeholder="Enter father's name" autocomplete="off" />
+              </div>
+              <div class="form-field">
+                <label>Gender *</label>
+                <div class="gender-group" id="genderGroup">
+                  <label class="gender-opt">
+                    <input type="radio" name="gender" value="Male">
+                    <span class="g-dot"></span>
+                    <span>Male</span>
+                  </label>
+                  <label class="gender-opt">
+                    <input type="radio" name="gender" value="Female">
+                    <span class="g-dot"></span>
+                    <span>Female</span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-field">
+                <label>Date of Birth *</label>
+                <div class="dob-group">
+                  <span class="dob-select"><select id="dobDay"><option value="">DD</option></select></span>
+                  <span class="dob-select"><select id="dobMonth"><option value="">Month</option></select></span>
+                  <span class="dob-select"><select id="dobYear"><option value="">YYYY</option></select></span>
+                </div>
+              </div>
+              <div class="form-field span2">
+                <label for="studentMobile">Mobile Number *</label>
+                <input type="tel" id="studentMobile" maxlength="10" inputmode="numeric"
+                       placeholder="10-digit mobile number" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button class="btn-action orange" id="generateIdBtn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span id="genBtnText">Generate Learner ID</span>
+              </button>
+            </div>
+
+            <div class="gen-box" id="genBox">
+              <div>
+                <div class="glabel">Generated Learner ID</div>
+                <div class="gid" id="genId">LEARN000</div>
+                <div class="gname" id="genName">Student Name</div>
+              </div>
+              <button class="copy-btn" id="copyIdBtn" type="button">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                <span>Copy</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Registered Students</h3>
+            <div style="overflow-x:auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Learner ID</th>
+                    <th>Full Name</th>
+                    <th>Father's Name</th>
+                    <th>Gender</th>
+                    <th>DOB</th>
+                    <th>Mobile</th>
+                    <th>Registered</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                  <tr class="spin-row"><td colspan="8"><span class="spin-wrap"><span class="spinner"></span>Loading students...</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="pane-fonts">
+          <h2 class="pane-title">Font Management</h2>
+          <p class="pane-sub">Upload custom fonts (TTF, OTF, WOFF, WOFF2) for each language. One font per language — a new upload replaces the previous one. Fonts are stored in Firebase Database (max 500KB each).</p>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Upload New Font</h3>
+
+            <div class="form-field span2" style="margin-bottom:1rem">
+              <label>Step 1 &nbsp;·&nbsp; Select Language</label>
+              <div class="lang-choice-group" id="fontLangGroup">
+                <label class="lang-choice">
+                  <input type="radio" name="fontLang" value="hindi">
+                  <span class="lbox"></span>
+                  <span class="lname">Hindi</span>
+                </label>
+                <label class="lang-choice">
+                  <input type="radio" name="fontLang" value="english">
+                  <span class="lbox"></span>
+                  <span class="lname">English</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="hidden-step" id="fontFileStep">
+              <div class="form-grid full">
+                <div class="form-field span2">
+                  <label>Step 2 &nbsp;·&nbsp; Select Font File (max 500 KB)</label>
+                  <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2" />
+                </div>
+              </div>
+            </div>
+
+            <div class="hidden-step" id="fontNameStep">
+              <div class="form-grid full">
+                <div class="form-field span2">
+                  <label>Step 3 &nbsp;·&nbsp; Font Name</label>
+                  <input type="text" id="fontName" placeholder="e.g. Kruti Dev 010, Noto Serif Devanagari" autocomplete="off" />
+                </div>
+              </div>
+              <div class="action-row">
+                <button class="btn-action" id="uploadFontBtn" type="button">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                       stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <span id="uploadFontBtnText">Submit Font</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Uploaded Fonts</h3>
+            <div style="overflow-x:auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Font Name</th>
+                    <th>Language</th>
+                    <th>Upload Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="fontsTableBody">
+                  <tr class="spin-row"><td colspan="4"><span class="spin-wrap"><span class="spinner"></span>Loading fonts...</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="pane-upload">
+          <h2 class="pane-title">Test Content Upload</h2>
+          <p class="pane-sub">Add the text that students will type. Choose either method below.</p>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Method 1 &nbsp;— Upload TXT File</h3>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="fileTitle">Test Title</label>
+                <input type="text" id="fileTitle" placeholder="e.g. Beginner Level Test 1" autocomplete="off" />
+              </div>
+              <div class="form-field">
+                <label for="fileLang">Language</label>
+                <select id="fileLang">
+                  <option value="hindi">Hindi</option>
+                  <option value="english" selected>English</option>
+                </select>
+              </div>
+              <div class="form-field span2">
+                <label for="contentFile">Select TXT File</label>
+                <input type="file" id="contentFile" accept=".txt,text/plain" />
+              </div>
+            </div>
+
+            <label class="check-line">
+              <input type="checkbox" id="fileFreeTest">
+              <span class="check-box"></span>
+              <span class="chk-text">Mark as Free Test
+                <span class="chk-sub">— shown on homepage for users without a Learner ID</span>
+              </span>
+            </label>
+
+            <div class="action-row">
+              <button class="btn-action orange" id="uploadContentBtn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span id="uploadContentBtnText">Upload Test Content</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Method 2 &nbsp;— Write Content Live</h3>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="liveTitle">Test Title</label>
+                <input type="text" id="liveTitle" placeholder="e.g. Practice Set A" autocomplete="off" />
+              </div>
+              <div class="form-field">
+                <label for="liveLang">Language</label>
+                <select id="liveLang">
+                  <option value="hindi">Hindi</option>
+                  <option value="english" selected>English</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="live-toolbar" style="margin-top:1.1rem">
+              <div class="live-toolbar-left">
+                <span class="toolbar-label">Live Editor</span>
+                <span class="live-hint" id="liveFontHint"></span>
+              </div>
+              <span class="word-counter">
+                <span class="wc-num" id="liveWordCount">0</span>
+                <span>words</span>
+              </span>
+            </div>
+
+            <textarea id="liveContent" class="live-textarea"
+                      placeholder="Start typing or paste the test content here — it will appear in the font uploaded for the selected language."></textarea>
+
+            <label class="check-line">
+              <input type="checkbox" id="liveFreeTest">
+              <span class="check-box"></span>
+              <span class="chk-text">Mark as Free Test
+                <span class="chk-sub">— shown on homepage for users without a Learner ID</span>
+              </span>
+            </label>
+
+            <div class="action-row">
+              <button class="btn-action orange" id="saveLiveBtn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/>
+                  <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                <span id="saveLiveBtnText">Save Content</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="pane-files">
+          <h2 class="pane-title">Manage Test Files</h2>
+          <p class="pane-sub">View, preview and delete previously uploaded or written test content.</p>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Uploaded Test Files</h3>
+            <div style="overflow-x:auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Language</th>
+                    <th>Source</th>
+                    <th>Free</th>
+                    <th>Words</th>
+                    <th>Uploaded</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="filesTableBody">
+                  <tr class="spin-row"><td colspan="7"><span class="spin-wrap"><span class="spinner"></span>Loading test files...</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="pane-qr">
+          <h2 class="pane-title">Support QR Code</h2>
+          <p class="pane-sub">Upload a QR code image that will be displayed in the footer of every page for voluntary donations.</p>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Current QR Code</h3>
+
+            <div class="qr-preview-wrap">
+              <img class="qr-preview-img" id="qrPreview" src="" alt="QR Preview" />
+              <div class="qr-preview-empty" id="qrPreviewEmpty">
+                <span class="spin-wrap"><span class="spinner"></span>Loading QR code...</span>
+              </div>
+            </div>
+
+            <div style="margin-top:1rem; display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+              <span class="qr-status-badge default" id="qrStatusBadge">Default Placeholder</span>
+            </div>
+
+            <div class="form-field span2" style="margin-top:1.4rem">
+              <label for="qrFile">Select QR Code Image</label>
+              <input type="file" id="qrFile" accept="image/png,image/jpeg,image/jpg,image/webp" />
+            </div>
+
+            <div class="qr-instruction">
+              <span class="qi-title">Image Requirements &amp; Guidelines</span>
+              <ul>
+                <li>Recommended image size: <strong>300 × 300 pixels</strong> (square, 1:1 aspect ratio)</li>
+                <li>Minimum size: <strong>200 × 200 pixels</strong> &nbsp;·&nbsp; Maximum size: <strong>500 × 500 pixels</strong></li>
+                <li>Accepted formats: <strong>PNG, JPG, or WEBP</strong></li>
+                <li>Maximum file size: <strong>200 KB</strong></li>
+                <li>Use a clear, high-contrast QR code with a white background for reliable scanning</li>
+                <li>The QR code should be tested with PhonePe, Paytm, Google Pay, or any UPI app before uploading</li>
+              </ul>
+            </div>
+
+            <div class="action-row">
+              <button class="btn-action" id="uploadQrBtn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span id="uploadQrBtnText">Upload QR Code</span>
+              </button>
+              <button class="btn-action orange" id="resetQrBtn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="1 4 1 10 7 10"/>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+                Reset to Default
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="pane-display">
+          <h2 class="pane-title">Display Settings</h2>
+          <p class="pane-sub">Configure default font size and line height — separately for Hindi and English. These apply to the typing interface, live editor, and result review.</p>
+
+          <div class="panel">
+            <h3 class="panel-title"><span class="dot"></span> Per-Language Typing Defaults</h3>
+
+            <div class="settings-lang-block">
+              <div class="settings-lang-head">
+                <span class="sl-dot"></span>
+                <span class="sl-title">Hindi (हिंदी)</span>
+                <span class="sl-hint">Applies to Hindi tests</span>
+              </div>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="hindiFontSize">Font Size (rem)</label>
+                  <input type="text" id="hindiFontSize" value="1.4" placeholder="e.g. 1.4" autocomplete="off" />
+                </div>
+                <div class="form-field">
+                  <label for="hindiLineHeight">Line Height</label>
+                  <input type="text" id="hindiLineHeight" value="1.5" placeholder="e.g. 1.5" autocomplete="off" />
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-lang-block">
+              <div class="settings-lang-head">
+                <span class="sl-dot" style="background:var(--brand)"></span>
+                <span class="sl-title">English</span>
+                <span class="sl-hint">Applies to English tests</span>
+              </div>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="englishFontSize">Font Size (rem)</label>
+                  <input type="text" id="englishFontSize" value="1.4" placeholder="e.g. 1.4" autocomplete="off" />
+                </div>
+                <div class="form-field">
+                  <label for="englishLineHeight">Line Height</label>
+                  <input type="text" id="englishLineHeight" value="1.5" placeholder="e.g. 1.5" autocomplete="off" />
+                </div>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button class="btn-action" id="applySettingsBtn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span id="applySettingsBtnText">Save Settings</span>
+              </button>
+              <button class="btn-action orange" id="resetSettingsBtn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="1 4 1 10 7 10"/>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+                Reset to Default
+              </button>
+            </div>
+
+            <div style="margin-top:1.4rem">
+              <label style="display:block;font-size:0.75rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem">Live Preview</label>
+              <div class="settings-preview" id="settingsPreview">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.</div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div class="footer-text">
+          <strong>TypingX PRO</strong> is a typing test software designed to help students practice for the Rajasthan Staff Selection Board (RSSB) LDC recruitment typing test, following its exact pattern — completely free of charge. It has been developed by <strong>Neeraj Kabra</strong>, himself a student, with the assistance of Artificial Intelligence. Building and maintaining this platform requires considerable time and effort. If you wish to support this initiative, you may scan the QR code and contribute any amount via PhonePe, Paytm, Google Pay, or any other UPI application. TypingX PRO wishes you a bright and successful future.
+        </div>
+        <div class="footer-qr-box">
+          <img class="footer-qr-img js-footer-qr" src="" alt="Support QR Code" />
+          <div class="footer-qr-label">Scan to Support</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <div class="modal-overlay" id="adminModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h3 class="modal-title">
+        <span class="lock-mini">
+          <svg viewBox="0 0 24 24">
+            <rect x="4.5" y="10.5" width="15" height="10" rx="1.6"/>
+            <path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/>
+          </svg>
+        </span>
+        Sign In As Admin
+      </h3>
+
+      <form id="adminForm" novalidate>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="adminUser" autocomplete="email" spellcheck="false" placeholder="admin@example.com" />
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" id="adminPass" autocomplete="current-password" placeholder="Enter password" />
+        </label>
+        <div class="modal-msg" id="adminMsg"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="adminCancel">Cancel</button>
+          <button type="submit" class="btn-primary" id="adminSignInBtn">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="previewModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="max-width:46rem">
+      <h3 class="modal-title">
+        <span class="lock-mini">
+          <svg viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </span>
+        <span id="previewTitleText">Test Content Preview</span>
+      </h3>
+      <div class="preview-content" id="previewBody"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="previewClose">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal-card warn" style="max-width:24rem">
+      <h3 class="modal-title">
+        <span class="lock-mini danger">!</span>
+        <span id="confirmTitle">Confirm Delete</span>
+      </h3>
+      <p class="confirm-text" id="confirmText">Are you sure?</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="confirmCancel">Cancel</button>
+        <button type="button" class="btn-danger" id="confirmOk">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="submitConfirmModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="max-width:24rem">
+      <h3 class="modal-title">
+        <span class="lock-mini">
+          <svg viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </span>
+        <span>Submit Test?</span>
+      </h3>
+      <p class="confirm-text">Are you sure you want to submit your test now? You will not be able to make changes after submitting.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="submitCancel">Cancel</button>
+        <button type="button" class="btn-primary" id="submitOk">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <span class="tick">✓</span>
+    <span id="toastText">Done</span>
+  </div>
+
+  <div class="loading-ov" id="loadingOverlay">
+    <span class="spinner"></span>
+    <span>Please wait...</span>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database-compat.js"></script>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============ DEFAULT FAKE QR ============ */
+  var FAKE_QR = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges">' +
+      '<rect width="29" height="29" fill="#ffffff"/>' +
+      '<g fill="#000000">' +
+        '<rect x="0" y="0" width="7" height="7"/><rect x="1" y="1" width="5" height="5" fill="#ffffff"/><rect x="2" y="2" width="3" height="3"/>' +
+        '<rect x="22" y="0" width="7" height="7"/><rect x="23" y="1" width="5" height="5" fill="#ffffff"/><rect x="24" y="2" width="3" height="3"/>' +
+        '<rect x="0" y="22" width="7" height="7"/><rect x="1" y="23" width="5" height="5" fill="#ffffff"/><rect x="2" y="24" width="3" height="3"/>' +
+        '<rect x="9" y="0" width="1" height="1"/><rect x="11" y="0" width="1" height="1"/><rect x="13" y="0" width="1" height="1"/><rect x="17" y="0" width="1" height="1"/><rect x="19" y="0" width="1" height="1"/>' +
+        '<rect x="10" y="1" width="1" height="1"/><rect x="12" y="1" width="1" height="1"/><rect x="15" y="1" width="1" height="1"/><rect x="18" y="1" width="1" height="1"/>' +
+        '<rect x="9" y="2" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="14" y="2" width="1" height="1"/><rect x="17" y="2" width="1" height="1"/><rect x="19" y="2" width="1" height="1"/>' +
+        '<rect x="10" y="3" width="1" height="1"/><rect x="13" y="3" width="1" height="1"/><rect x="15" y="3" width="1" height="1"/><rect x="18" y="3" width="1" height="1"/>' +
+        '<rect x="9" y="4" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/><rect x="14" y="4" width="1" height="1"/><rect x="16" y="4" width="1" height="1"/><rect x="19" y="4" width="1" height="1"/>' +
+        '<rect x="11" y="5" width="1" height="1"/><rect x="13" y="5" width="1" height="1"/><rect x="17" y="5" width="1" height="1"/><rect x="19" y="5" width="1" height="1"/>' +
+        '<rect x="10" y="6" width="1" height="1"/><rect x="12" y="6" width="1" height="1"/><rect x="14" y="6" width="1" height="1"/><rect x="16" y="6" width="1" height="1"/><rect x="18" y="6" width="1" height="1"/>' +
+        '<rect x="0" y="9" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="6" y="9" width="1" height="1"/>' +
+        '<rect x="1" y="10" width="1" height="1"/><rect x="3" y="10" width="1" height="1"/><rect x="5" y="10" width="1" height="1"/>' +
+        '<rect x="0" y="11" width="1" height="1"/><rect x="2" y="11" width="1" height="1"/><rect x="4" y="11" width="1" height="1"/><rect x="6" y="11" width="1" height="1"/>' +
+        '<rect x="1" y="12" width="1" height="1"/><rect x="3" y="12" width="1" height="1"/><rect x="5" y="12" width="1" height="1"/>' +
+        '<rect x="0" y="13" width="1" height="1"/><rect x="4" y="13" width="1" height="1"/><rect x="6" y="13" width="1" height="1"/>' +
+        '<rect x="8" y="8" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="12" y="8" width="1" height="1"/><rect x="14" y="8" width="1" height="1"/><rect x="16" y="8" width="1" height="1"/><rect x="18" y="8" width="1" height="1"/><rect x="20" y="8" width="1" height="1"/><rect x="22" y="8" width="1" height="1"/><rect x="24" y="8" width="1" height="1"/><rect x="26" y="8" width="1" height="1"/><rect x="28" y="8" width="1" height="1"/>' +
+        '<rect x="9" y="9" width="1" height="1"/><rect x="11" y="9" width="1" height="1"/><rect x="13" y="9" width="1" height="1"/><rect x="15" y="9" width="1" height="1"/><rect x="17" y="9" width="1" height="1"/><rect x="19" y="9" width="1" height="1"/><rect x="21" y="9" width="1" height="1"/><rect x="23" y="9" width="1" height="1"/><rect x="25" y="9" width="1" height="1"/><rect x="27" y="9" width="1" height="1"/>' +
+        '<rect x="8" y="10" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/><rect x="12" y="10" width="1" height="1"/><rect x="14" y="10" width="1" height="1"/><rect x="16" y="10" width="1" height="1"/><rect x="18" y="10" width="1" height="1"/><rect x="20" y="10" width="1" height="1"/><rect x="22" y="10" width="1" height="1"/><rect x="24" y="10" width="1" height="1"/><rect x="26" y="10" width="1" height="1"/><rect x="28" y="10" width="1" height="1"/>' +
+        '<rect x="9" y="11" width="1" height="1"/><rect x="11" y="11" width="1" height="1"/><rect x="13" y="11" width="1" height="1"/><rect x="15" y="11" width="1" height="1"/><rect x="17" y="11" width="1" height="1"/><rect x="19" y="11" width="1" height="1"/><rect x="21" y="11" width="1" height="1"/><rect x="23" y="11" width="1" height="1"/><rect x="25" y="11" width="1" height="1"/><rect x="27" y="11" width="1" height="1"/>' +
+        '<rect x="8" y="12" width="1" height="1"/><rect x="10" y="12" width="1" height="1"/><rect x="12" y="12" width="1" height="1"/><rect x="14" y="12" width="1" height="1"/><rect x="16" y="12" width="1" height="1"/><rect x="18" y="12" width="1" height="1"/><rect x="20" y="12" width="1" height="1"/><rect x="22" y="12" width="1" height="1"/><rect x="24" y="12" width="1" height="1"/><rect x="26" y="12" width="1" height="1"/><rect x="28" y="12" width="1" height="1"/>' +
+        '<rect x="9" y="13" width="1" height="1"/><rect x="11" y="13" width="1" height="1"/><rect x="13" y="13" width="1" height="1"/><rect x="15" y="13" width="1" height="1"/><rect x="17" y="13" width="1" height="1"/><rect x="19" y="13" width="1" height="1"/><rect x="21" y="13" width="1" height="1"/><rect x="23" y="13" width="1" height="1"/><rect x="25" y="13" width="1" height="1"/><rect x="27" y="13" width="1" height="1"/>' +
+        '<rect x="8" y="14" width="1" height="1"/><rect x="10" y="14" width="1" height="1"/><rect x="12" y="14" width="1" height="1"/><rect x="14" y="14" width="1" height="1"/><rect x="16" y="14" width="1" height="1"/><rect x="18" y="14" width="1" height="1"/><rect x="20" y="14" width="1" height="1"/><rect x="22" y="14" width="1" height="1"/><rect x="24" y="14" width="1" height="1"/><rect x="26" y="14" width="1" height="1"/><rect x="28" y="14" width="1" height="1"/>' +
+        '<rect x="0" y="16" width="1" height="1"/><rect x="2" y="16" width="1" height="1"/><rect x="4" y="16" width="1" height="1"/><rect x="6" y="16" width="1" height="1"/>' +
+        '<rect x="1" y="17" width="1" height="1"/><rect x="3" y="17" width="1" height="1"/><rect x="5" y="17" width="1" height="1"/>' +
+        '<rect x="0" y="18" width="1" height="1"/><rect x="2" y="18" width="1" height="1"/><rect x="4" y="18" width="1" height="1"/><rect x="6" y="18" width="1" height="1"/>' +
+        '<rect x="1" y="19" width="1" height="1"/><rect x="3" y="19" width="1" height="1"/><rect x="5" y="19" width="1" height="1"/>' +
+        '<rect x="0" y="20" width="1" height="1"/><rect x="4" y="20" width="1" height="1"/><rect x="6" y="20" width="1" height="1"/>' +
+        '<rect x="8" y="16" width="1" height="1"/><rect x="10" y="16" width="1" height="1"/><rect x="12" y="16" width="1" height="1"/><rect x="14" y="16" width="1" height="1"/><rect x="16" y="16" width="1" height="1"/><rect x="18" y="16" width="1" height="1"/><rect x="20" y="16" width="1" height="1"/><rect x="22" y="16" width="1" height="1"/><rect x="24" y="16" width="1" height="1"/><rect x="26" y="16" width="1" height="1"/><rect x="28" y="16" width="1" height="1"/>' +
+        '<rect x="9" y="17" width="1" height="1"/><rect x="11" y="17" width="1" height="1"/><rect x="13" y="17" width="1" height="1"/><rect x="15" y="17" width="1" height="1"/><rect x="17" y="17" width="1" height="1"/><rect x="19" y="17" width="1" height="1"/><rect x="21" y="17" width="1" height="1"/><rect x="23" y="17" width="1" height="1"/><rect x="25" y="17" width="1" height="1"/><rect x="27" y="17" width="1" height="1"/>' +
+        '<rect x="8" y="18" width="1" height="1"/><rect x="10" y="18" width="1" height="1"/><rect x="12" y="18" width="1" height="1"/><rect x="14" y="18" width="1" height="1"/><rect x="16" y="18" width="1" height="1"/><rect x="18" y="18" width="1" height="1"/><rect x="20" y="18" width="1" height="1"/><rect x="22" y="18" width="1" height="1"/><rect x="24" y="18" width="1" height="1"/><rect x="26" y="18" width="1" height="1"/><rect x="28" y="18" width="1" height="1"/>' +
+        '<rect x="9" y="19" width="1" height="1"/><rect x="11" y="19" width="1" height="1"/><rect x="13" y="19" width="1" height="1"/><rect x="15" y="19" width="1" height="1"/><rect x="17" y="19" width="1" height="1"/><rect x="19" y="19" width="1" height="1"/><rect x="21" y="19" width="1" height="1"/><rect x="23" y="19" width="1" height="1"/><rect x="25" y="19" width="1" height="1"/><rect x="27" y="19" width="1" height="1"/>' +
+        '<rect x="8" y="20" width="1" height="1"/><rect x="10" y="20" width="1" height="1"/><rect x="12" y="20" width="1" height="1"/><rect x="14" y="20" width="1" height="1"/><rect x="16" y="20" width="1" height="1"/><rect x="18" y="20" width="1" height="1"/><rect x="20" y="20" width="1" height="1"/><rect x="22" y="20" width="1" height="1"/><rect x="24" y="20" width="1" height="1"/><rect x="26" y="20" width="1" height="1"/><rect x="28" y="20" width="1" height="1"/>' +
+      '</g>' +
+    '</svg>'
+  );
+
+  /* ============================================================
+     MULTI-TAB BLOCK
+     ============================================================ */
+  (function(){
+    try {
+      const bc = new BroadcastChannel('typingx_single_tab');
+      let others = 0;
+      bc.onmessage = function(e){
+        if (e.data === 'hello') { bc.postMessage('hi'); others++; }
+        else if (e.data === 'hi') { others++; }
+      };
+      bc.postMessage('hello');
+      setTimeout(function(){
+        if (others > 0){
+          document.body.innerHTML =
+            '<div class="mtb-overlay"><div class="mtb-box">' +
+            '<h1>TypingX PRO is already open</h1>' +
+            '<p>This application can only run in one browser tab at a time to keep the test environment secure. Please close the other tab and refresh this page.</p>' +
+            '</div></div>';
+          throw new Error('Multi-tab blocked');
+        }
+      }, 400);
+    } catch(e){}
+  })();
+
+  /* ============================================================
+     FIREBASE INIT
+     ============================================================ */
+  const firebaseConfig = {
+    apiKey: "AIzaSyBjQrA5DBQgtFssc2BtcVdWzCrlm42HBaU",
+    authDomain: "typingxpro2026.firebaseapp.com",
+    databaseURL: "https://typingxpro2026-default-rtdb.firebaseio.com",
+    projectId: "typingxpro2026",
+    storageBucket: "typingxpro2026.firebasestorage.app",
+    messagingSenderId: "270151416949",
+    appId: "1:270151416949:web:d373de2d03c5bf4469cc3c"
+  };
+
+  let auth = null, db = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db   = firebase.database();
+  } catch(e){
+    console.error('Firebase init failed:', e);
+  }
+
+  /* ===================== ELEMENTS ===================== */
+  const homeScreen     = document.getElementById('homeScreen');
+  const testListScreen = document.getElementById('testListScreen');
+  const typingScreen   = document.getElementById('typingScreen');
+  const resultScreen   = document.getElementById('resultScreen');
+  const adminDashboard = document.getElementById('adminDashboard');
+
+  const adminModal     = document.getElementById('adminModal');
+  const adminForm      = document.getElementById('adminForm');
+  const adminUser      = document.getElementById('adminUser');
+  const adminPass      = document.getElementById('adminPass');
+  const adminMsg       = document.getElementById('adminMsg');
+  const adminCancel    = document.getElementById('adminCancel');
+  const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+  const adminEmailShow = document.getElementById('adminEmailShow');
+  const adminSignInBtn = document.getElementById('adminSignInBtn');
+
+  const learnerIdInput = document.getElementById('learnerIdInput');
+  const verifyBtn      = document.getElementById('verifyBtn');
+  const verifyBtnText  = document.getElementById('verifyBtnText');
+  const verifyMsg      = document.getElementById('verifyMsg');
+  const welcomeLine    = document.getElementById('welcomeLine');
+  const welcomeName    = document.getElementById('welcomeName');
+  const step2          = document.getElementById('step2');
+  const langGrid       = document.getElementById('langGrid');
+  const nextBtn        = document.getElementById('nextBtn');
+  const freeTestBtn    = document.getElementById('freeTestBtn');
+
+  const testListTitle  = document.getElementById('testListTitle');
+  const testListSub    = document.getElementById('testListSub');
+  const testListBody   = document.getElementById('testListBody');
+  const listBackBtn    = document.getElementById('listBackBtn');
+
+  const toast          = document.getElementById('toast');
+  const toastText      = document.getElementById('toastText');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+
+  const studentsTableBody = document.getElementById('studentsTableBody');
+  const fontsTableBody    = document.getElementById('fontsTableBody');
+  const filesTableBody    = document.getElementById('filesTableBody');
+
+  const studentName   = document.getElementById('studentName');
+  const studentFather = document.getElementById('studentFather');
+  const studentMobile = document.getElementById('studentMobile');
+  const genderGroup   = document.getElementById('genderGroup');
+  const dobDay        = document.getElementById('dobDay');
+  const dobMonth      = document.getElementById('dobMonth');
+  const dobYear       = document.getElementById('dobYear');
+  const generateIdBtn = document.getElementById('generateIdBtn');
+  const genBtnText    = document.getElementById('genBtnText');
+  const genBox        = document.getElementById('genBox');
+  const genId         = document.getElementById('genId');
+  const genName       = document.getElementById('genName');
+  const copyIdBtn     = document.getElementById('copyIdBtn');
+
+  const fontLangGroup = document.getElementById('fontLangGroup');
+  const fontFileStep  = document.getElementById('fontFileStep');
+  const fontNameStep  = document.getElementById('fontNameStep');
+  const fontFile      = document.getElementById('fontFile');
+  const fontName      = document.getElementById('fontName');
+  const uploadFontBtn = document.getElementById('uploadFontBtn');
+  const uploadFontBtnText = document.getElementById('uploadFontBtnText');
+
+  const fileTitle       = document.getElementById('fileTitle');
+  const fileLang        = document.getElementById('fileLang');
+  const contentFile     = document.getElementById('contentFile');
+  const fileFreeTest    = document.getElementById('fileFreeTest');
+  const uploadContentBtn= document.getElementById('uploadContentBtn');
+  const uploadContentBtnText = document.getElementById('uploadContentBtnText');
+
+  const liveTitle     = document.getElementById('liveTitle');
+  const liveLang      = document.getElementById('liveLang');
+  const liveContent   = document.getElementById('liveContent');
+  const liveFontHint  = document.getElementById('liveFontHint');
+  const liveWordCount = document.getElementById('liveWordCount');
+  const liveFreeTest  = document.getElementById('liveFreeTest');
+  const saveLiveBtn   = document.getElementById('saveLiveBtn');
+  const saveLiveBtnText = document.getElementById('saveLiveBtnText');
+
+  const previewModal    = document.getElementById('previewModal');
+  const previewBody     = document.getElementById('previewBody');
+  const previewClose    = document.getElementById('previewClose');
+  const previewTitleText= document.getElementById('previewTitleText');
+
+  const confirmModal  = document.getElementById('confirmModal');
+  const confirmTitle  = document.getElementById('confirmTitle');
+  const confirmText   = document.getElementById('confirmText');
+  const confirmCancel = document.getElementById('confirmCancel');
+  const confirmOk     = document.getElementById('confirmOk');
+
+  const submitConfirmModal = document.getElementById('submitConfirmModal');
+  const submitCancel       = document.getElementById('submitCancel');
+  const submitOk           = document.getElementById('submitOk');
+
+  const tbUserName       = document.getElementById('tbUserName');
+  const tbUserId         = document.getElementById('tbUserId');
+  const tbFontName       = document.getElementById('tbFontName');
+  const tbFontInfo       = document.getElementById('tbFontInfo');
+  const tbPassage        = document.getElementById('tbPassage');
+  const tbInput          = document.getElementById('tbInput');
+  const fsDecBtn         = document.getElementById('fsDecBtn');
+  const fsIncBtn         = document.getElementById('fsIncBtn');
+  const fsDisplay        = document.getElementById('fsDisplay');
+  const tbFullscreenBtn  = document.getElementById('tbFullscreenBtn');
+  const tbFsLabel        = document.getElementById('tbFsLabel');
+  const tbSubmitBtn      = document.getElementById('tbSubmitBtn');
+  const timerValue       = document.getElementById('timerValue');
+  const bsModeGroup      = document.getElementById('bsModeGroup');
+
+  const rrStudentName = document.getElementById('rrStudentName');
+  const rrLearnerId   = document.getElementById('rrLearnerId');
+  const rrTestName    = document.getElementById('rrTestName');
+  const rrLang        = document.getElementById('rrLang');
+  const rrTotal       = document.getElementById('rrTotal');
+  const rrTyped       = document.getElementById('rrTyped');
+  const rrCorrect     = document.getElementById('rrCorrect');
+  const rrMarks       = document.getElementById('rrMarks');
+  const rrComparison  = document.getElementById('rrComparison');
+  const rrHomeBtn     = document.getElementById('rrHomeBtn');
+  const rrTestListBtn = document.getElementById('rrTestListBtn');
+
+  const hindiFontSize   = document.getElementById('hindiFontSize');
+  const hindiLineHeight = document.getElementById('hindiLineHeight');
+  const englishFontSize = document.getElementById('englishFontSize');
+  const englishLineHeight = document.getElementById('englishLineHeight');
+  const applySettingsBtn  = document.getElementById('applySettingsBtn');
+  const applySettingsBtnText = document.getElementById('applySettingsBtnText');
+  const resetSettingsBtn  = document.getElementById('resetSettingsBtn');
+
+  const qrFile         = document.getElementById('qrFile');
+  const qrPreview      = document.getElementById('qrPreview');
+  const qrPreviewEmpty = document.getElementById('qrPreviewEmpty');
+  const qrStatusBadge  = document.getElementById('qrStatusBadge');
+  const uploadQrBtn    = document.getElementById('uploadQrBtn');
+  const uploadQrBtnText= document.getElementById('uploadQrBtnText');
+  const resetQrBtn     = document.getElementById('resetQrBtn');
+  let currentQrDataUrl = null;
+
+  /* ===================== STATE ===================== */
+  const state = {
+    verifiedId: null,
+    verifiedName: null,
+    selectedLanguage: null,
+    lastGeneratedId: null,
+    testListMode: 'language',
+    currentTest: null,
+    currentPassage: '',
+    typingStarted: false,
+    typingFontSize: 1.4,
+    backspaceMode: 'current'
+  };
+
+  const adminData = { students: [], fonts: [], files: [] };
+  const loadedFontFamilies = new Set();
+
+  const firebaseReady = {
+    students: false,
+    fonts: false,
+    files: false,
+    qr: false,
+    settings: false
+  };
+
+  const displaySettings = {
+    hindi:   { fontSize: 1.4, lineHeight: 1.5 },
+    english: { fontSize: 1.4, lineHeight: 1.5 }
+  };
+
+  let pendingDelete = null;
+  const TEST_DURATION_SECONDS = 600;
+  let timerInterval = null;
+  let timeRemaining = TEST_DURATION_SECONDS;
+  const TEST_MAX_MARKS = 25;
+  const TEST_DURATION_LABEL = '10 minutes';
+
+  /* ===================== UTIL ===================== */
+  function escapeHtml(str){
+    return String(str == null ? '' : str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function formatDate(ts){
+    if (!ts) return '—';
+    const d = new Date(ts);
+    const day = String(d.getDate()).padStart(2,'0');
+    const mon = d.toLocaleString('en-US',{month:'short'});
+    const yr  = d.getFullYear();
+    const hh  = String(d.getHours()).padStart(2,'0');
+    const mm  = String(d.getMinutes()).padStart(2,'0');
+    return day + ' ' + mon + ' ' + yr + ', ' + hh + ':' + mm;
+  }
+  function formatDob(d, m, y){
+    if (!d || !m || !y) return '—';
+    const date = new Date(y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0') + 'T00:00:00');
+    if (isNaN(date)) return d + '/' + m + '/' + y;
+    return String(d).padStart(2,'0') + ' ' +
+           date.toLocaleString('en-US',{month:'short'}) + ' ' + y;
+  }
+  function getSelectedGender(){
+    const checked = genderGroup.querySelector('input[name="gender"]:checked');
+    return checked ? checked.value : null;
+  }
+  function getPaddedContent(content, language){
+    const target = (language === 'hindi') ? 400 : 500;
+    let words = String(content || '').trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return '';
+    if (words.length === target) return words.join(' ');
+    if (words.length > target) return words.slice(0, target).join(' ');
+    const original = words.slice();
+    while (words.length < target){ words = words.concat(original); }
+    return words.slice(0, target).join(' ');
+  }
+  function applySettingsForLang(lang){
+    const cfg = displaySettings[lang] || displaySettings.english;
+    document.documentElement.style.setProperty('--typing-fs', cfg.fontSize + 'rem');
+    document.documentElement.style.setProperty('--typing-lh', String(cfg.lineHeight));
+  }
+  function syncSettingsInputs(){
+    hindiFontSize.value = String(displaySettings.hindi.fontSize);
+    hindiLineHeight.value = String(displaySettings.hindi.lineHeight);
+    englishFontSize.value = String(displaySettings.english.fontSize);
+    englishLineHeight.value = String(displaySettings.english.lineHeight);
+  }
+  function applyContextSettings(){
+    if ((typingScreen.classList.contains('active') || resultScreen.classList.contains('active')) && state.currentTest){
+      applySettingsForLang(state.currentTest.language);
+    } else {
+      applySettingsForLang(liveLang.value || 'english');
+    }
+  }
+
+  function spinRow(cols, text){
+    return '<tr class="spin-row"><td colspan="' + cols + '"><span class="spin-wrap"><span class="spinner"></span>' + escapeHtml(text) + '</span></td></tr>';
+  }
+
+  /* ===================== BUTTON LOADING HELPERS ===================== */
+  function btnLoading(btn, textEl, loadingText){
+    if (!btn) return;
+    if (textEl) textEl.textContent = loadingText || 'Please wait...';
+    else btn.textContent = loadingText || 'Please wait...';
+    if (!btn.querySelector('.spinner')){
+      var sp = document.createElement('span');
+      sp.className = 'spinner sm';
+      btn.insertBefore(sp, btn.firstChild);
+    }
+    btn.disabled = true;
+  }
+  function btnReset(btn, textEl, normalText){
+    if (!btn) return;
+    var sp = btn.querySelector('.spinner');
+    if (sp) sp.remove();
+    if (textEl) textEl.textContent = normalText;
+    else btn.textContent = normalText;
+    btn.disabled = false;
+  }
+
+  /* ===================== TOAST ===================== */
+  let toastTimer = null;
+  function showToast(text, isWarn){
+    toastText.textContent = text;
+    toast.classList.toggle('warn', !!isWarn);
+    toast.querySelector('.tick').textContent = isWarn ? '!' : '✓';
+    toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+  function showLoading(on){ loadingOverlay.classList.toggle('show', !!on); }
+
+  /* ===================== QR APPLY ===================== */
+  function applyQrToFooters(dataUrl){
+    const src = dataUrl || FAKE_QR;
+    document.querySelectorAll('.js-footer-qr').forEach(function(img){
+      img.src = src;
+    });
+  }
+  function updateQrPreview(dataUrl){
+    if (dataUrl){
+      qrPreview.src = dataUrl;
+      qrPreview.classList.add('show');
+      qrPreviewEmpty.style.display = 'none';
+      qrStatusBadge.textContent = 'Custom QR Active';
+      qrStatusBadge.classList.remove('default');
+    } else {
+      qrPreview.src = FAKE_QR;
+      qrPreview.classList.add('show');
+      qrPreviewEmpty.style.display = 'none';
+      qrStatusBadge.textContent = 'Default Placeholder';
+      qrStatusBadge.classList.add('default');
+    }
+  }
+
+  /* ===================== SCREEN NAV ===================== */
+  function showScreen(target){
+    [homeScreen, testListScreen, typingScreen, resultScreen, adminDashboard].forEach(function(s){
+      s.classList.remove('active');
+    });
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener('keydown', function(e){
+    const isEsc = (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27);
+
+    if (typingScreen.classList.contains('active') && state.typingStarted){
+      if (isEsc){ e.preventDefault(); showToast('You cannot exit the test until you submit', true); return; }
+      if (e.ctrlKey || e.metaKey){
+        const k = (e.key || '').toLowerCase();
+        if (['w','t','n','r'].includes(k) && !e.shiftKey){
+          e.preventDefault();
+          try { e.returnValue = ''; } catch(err){}
+          showToast('Browser shortcuts are disabled during the test', true);
+          return;
+        }
+        if (k === 't' && e.shiftKey){ e.preventDefault(); return; }
+      }
+    }
+
+    if (!isEsc) return;
+    if (submitConfirmModal.classList.contains('open')){ e.preventDefault(); closeSubmitConfirm(); return; }
+    if (confirmModal.classList.contains('open')){ e.preventDefault(); closeConfirm(); return; }
+    if (adminModal.classList.contains('open')){ e.preventDefault(); closeAdminModal(); return; }
+    if (previewModal.classList.contains('open')){ e.preventDefault(); closePreview(); return; }
+  }, true);
+
+  window.addEventListener('beforeunload', function(e){
+    if (typingScreen.classList.contains('active') && state.typingStarted){
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
+
+  window.addEventListener('popstate', function(){
+    if (typingScreen.classList.contains('active') && state.typingStarted){
+      try { history.pushState({screen:'typing'}, '', location.href); } catch(e){}
+      showToast('You cannot leave the test until you submit', true);
+    }
+  });
+
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden && typingScreen.classList.contains('active') && state.typingStarted){
+      finalizeSubmit(true);
+      setTimeout(function(){ showToast('Test auto-submitted — tab switch detected', true); }, 200);
+    }
+  });
+
+  /* ===================== FIREBASE LISTENERS ===================== */
+  function startFirebaseSync(){
+    if (!db) return;
+
+    db.ref('students').on('value', function(snap){
+      const val = snap.val() || {};
+      adminData.students = Object.keys(val).map(function(k){
+        return Object.assign({ id: k }, val[k]);
+      }).sort(function(a,b){ return (b.registeredAt || 0) - (a.registeredAt || 0); });
+      firebaseReady.students = true;
+      renderStudents();
+    }, function(err){
+      console.error('students sync', err);
+      firebaseReady.students = true;
+      renderStudents();
+    });
+
+    db.ref('fonts').on('value', async function(snap){
+      const val = snap.val() || {};
+      adminData.fonts = [];
+      for (const lang in val){
+        const font = Object.assign({ language: lang }, val[lang]);
+        adminData.fonts.push(font);
+        await registerFontFromData(font);
+      }
+      firebaseReady.fonts = true;
+      renderFonts();
+      updateLiveFont();
+    }, function(err){
+      console.error('fonts sync', err);
+      firebaseReady.fonts = true;
+      renderFonts();
+    });
+
+    db.ref('files').on('value', function(snap){
+      const val = snap.val() || {};
+      adminData.files = Object.keys(val).map(function(k){
+        return Object.assign({ _key: k }, val[k]);
+      }).sort(function(a,b){ return (b.uploadedAt || 0) - (a.uploadedAt || 0); });
+      firebaseReady.files = true;
+      renderFiles();
+      if (testListScreen.classList.contains('active')){
+        renderTestList(state.testListMode === 'free' ? null : state.selectedLanguage,
+                       state.testListMode);
+      }
+    }, function(err){
+      console.error('files sync', err);
+      firebaseReady.files = true;
+      renderFiles();
+      if (testListScreen.classList.contains('active')){
+        renderTestList(state.testListMode === 'free' ? null : state.selectedLanguage,
+                       state.testListMode);
+      }
+    });
+
+    db.ref('displaySettings').on('value', function(snap){
+      const val = snap.val() || {};
+      ['hindi','english'].forEach(function(lang){
+        const cfg = val[lang] || {};
+        if (typeof cfg.fontSize === 'number') displaySettings[lang].fontSize = cfg.fontSize;
+        if (typeof cfg.lineHeight === 'number') displaySettings[lang].lineHeight = cfg.lineHeight;
+      });
+      firebaseReady.settings = true;
+      syncSettingsInputs();
+      applyContextSettings();
+    }, function(err){
+      console.error('settings sync', err);
+      firebaseReady.settings = true;
+    });
+
+    db.ref('qrCode').on('value', function(snap){
+      const val = snap.val();
+      firebaseReady.qr = true;
+      if (val && val.dataUrl){
+        currentQrDataUrl = val.dataUrl;
+        applyQrToFooters(val.dataUrl);
+        updateQrPreview(val.dataUrl);
+      } else {
+        currentQrDataUrl = null;
+        applyQrToFooters(null);
+        updateQrPreview(null);
+      }
+    }, function(err){
+      console.error('qr sync', err);
+      firebaseReady.qr = true;
+      applyQrToFooters(null);
+      updateQrPreview(null);
+    });
+  }
+
+  async function registerFontFromData(font){
+    if (!font || !font.dataUrl) return;
+    if (loadedFontFamilies.has(font.family)) return;
+    try {
+      const ff = new FontFace(font.family, 'url(' + font.dataUrl + ')');
+      await ff.load();
+      document.fonts.add(ff);
+      loadedFontFamilies.add(font.family);
+    } catch(err){
+      console.warn('Font load failed:', font.family, err);
+    }
+  }
+
+  /* ===================== ADMIN LOGIN ===================== */
+  document.querySelectorAll('[data-admin-open]').forEach(function(btn){
+    btn.addEventListener('click', openAdminModal);
+  });
+
+  function openAdminModal(){
+    adminForm.reset();
+    hideAdminMsg();
+    adminModal.classList.add('open');
+    setTimeout(function(){ adminUser.focus(); }, 60);
+  }
+  function closeAdminModal(){ adminModal.classList.remove('open'); hideAdminMsg(); }
+  function showAdminMsg(text, type){
+    adminMsg.textContent = text;
+    adminMsg.classList.remove('err','ok');
+    adminMsg.classList.add('show', type);
+  }
+  function hideAdminMsg(){
+    adminMsg.classList.remove('show','err','ok');
+    adminMsg.textContent = '';
+  }
+
+  adminCancel.addEventListener('click', closeAdminModal);
+  adminModal.addEventListener('click', function(e){
+    if (e.target === adminModal) closeAdminModal();
+  });
+
+  adminForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const email = adminUser.value.trim();
+    const pass  = adminPass.value;
+
+    if (!email || !pass){
+      showAdminMsg('Please enter both Email and Password.', 'err');
+      return;
+    }
+    if (!auth){
+      showAdminMsg('Firebase not initialized. Check your connection.', 'err');
+      return;
+    }
+
+    btnLoading(adminSignInBtn, null, 'Signing in...');
+    showAdminMsg('Signing in...', 'ok');
+
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(function(cred){
+        btnReset(adminSignInBtn, null, 'Sign In');
+        showAdminMsg('Signed in successfully.', 'ok');
+        setTimeout(function(){
+          closeAdminModal();
+          enterAdminDashboard(cred.user);
+        }, 300);
+      })
+      .catch(function(err){
+        btnReset(adminSignInBtn, null, 'Sign In');
+        console.warn(err);
+        let msg = 'Invalid credentials.';
+        if (err && err.code === 'auth/user-not-found') msg = 'No admin account with this email.';
+        else if (err && err.code === 'auth/wrong-password') msg = 'Incorrect password.';
+        else if (err && err.code === 'auth/invalid-email') msg = 'Please enter a valid email.';
+        else if (err && err.code === 'auth/invalid-credential') msg = 'Invalid email or password.';
+        else if (err && err.code === 'auth/too-many-requests') msg = 'Too many attempts. Try later.';
+        showAdminMsg(msg, 'err');
+      });
+  });
+
+  if (auth){
+    auth.onAuthStateChanged(function(user){
+      if (user && adminDashboard.classList.contains('active')){
+        adminEmailShow.textContent = user.email || '';
+      }
+    });
+  }
+
+  function enterAdminDashboard(user){
+    if (user) adminEmailShow.textContent = user.email || '';
+    syncSettingsInputs();
+    showScreen(adminDashboard);
+    activateTab('students');
+    applyContextSettings();
+    if (firebaseReady.qr){
+      updateQrPreview(currentQrDataUrl);
+    } else {
+      qrPreviewEmpty.innerHTML = '<span class="spin-wrap"><span class="spinner"></span>Loading QR code...</span>';
+    }
+    showToast('Welcome back, Administrator');
+  }
+
+  adminLogoutBtn.addEventListener('click', function(){
+    if (auth){
+      auth.signOut().then(function(){
+        adminEmailShow.textContent = '';
+        showScreen(homeScreen);
+        showToast('Signed out of Admin Panel');
+      }).catch(function(){ showScreen(homeScreen); });
+    } else {
+      showScreen(homeScreen);
+    }
+  });
+
+  /* ===================== TABS ===================== */
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabPanes   = document.querySelectorAll('.tab-pane');
+  function activateTab(name){
+    tabButtons.forEach(function(b){ b.classList.toggle('active', b.dataset.tab === name); });
+    tabPanes.forEach(function(p){ p.classList.toggle('active', p.id === 'pane-' + name); });
+  }
+  tabButtons.forEach(function(btn){
+    btn.addEventListener('click', function(){ activateTab(btn.dataset.tab); });
+  });
+
+  /* ===================== DOB ===================== */
+  (function initDobDropdowns(){
+    for (let i = 1; i <= 31; i++){
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = String(i).padStart(2,'0');
+      dobDay.appendChild(opt);
+    }
+    const months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+    months.forEach(function(m, i){
+      const opt = document.createElement('option');
+      opt.value = i + 1; opt.textContent = m;
+      dobMonth.appendChild(opt);
+    });
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear - 5; y >= 1950; y--){
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      dobYear.appendChild(opt);
+    }
+  })();
+
+  /* ===================== GENDER ===================== */
+  genderGroup.addEventListener('change', function(e){
+    const input = e.target;
+    if (!input || input.name !== 'gender') return;
+    genderGroup.querySelectorAll('.gender-opt').forEach(function(o){
+      const i = o.querySelector('input');
+      o.classList.toggle('is-selected', i.checked);
+    });
+  });
+
+  /* ===================== LEARNER ID ===================== */
+  function makeLearnerId(){
+    const firstChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const all = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let id;
+    do {
+      id = '';
+      for (let i = 0; i < 8; i++){
+        id += (i === 0)
+          ? firstChars.charAt(Math.floor(Math.random() * firstChars.length))
+          : all.charAt(Math.floor(Math.random() * all.length));
+      }
+    } while (findLearnerById(id));
+    return id;
+  }
+  function findLearnerById(id){
+    const s = adminData.students.find(function(x){ return x.id === id; });
+    return s || null;
+  }
+
+  studentMobile.addEventListener('input', function(){
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+  });
+
+  generateIdBtn.addEventListener('click', function(){
+    const name   = studentName.value.trim();
+    const father = studentFather.value.trim();
+    const gender = getSelectedGender();
+    const d = dobDay.value, m = dobMonth.value, y = dobYear.value;
+    const mobile = studentMobile.value.trim();
+
+    if (name.length < 2){ showToast('Please enter a valid student name', true); studentName.focus(); return; }
+    if (father.length < 2){ showToast("Please enter father's name", true); studentFather.focus(); return; }
+    if (!gender){ showToast('Please select gender', true); return; }
+    if (!d || !m || !y){ showToast('Please select complete Date of Birth', true); return; }
+    const check = new Date(y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0'));
+    if (isNaN(check) || check.getDate() !== Number(d) || (check.getMonth() + 1) !== Number(m)){
+      showToast('Please select a valid Date of Birth', true); return;
+    }
+    if (!mobile){ showToast('Mobile number is required', true); studentMobile.focus(); return; }
+    if (!/^\d{10}$/.test(mobile)){ showToast('Mobile number must be exactly 10 digits', true); return; }
+
+    const id = makeLearnerId();
+    const record = {
+      name: name, father: father, gender: gender,
+      dobDay: d, dobMonth: m, dobYear: y, mobile: mobile,
+      registeredAt: Date.now()
+    };
+    state.lastGeneratedId = id;
+
+    btnLoading(generateIdBtn, genBtnText, 'Generating...');
+    db.ref('students/' + id).set(record).then(function(){
+      btnReset(generateIdBtn, genBtnText, 'Generate Learner ID');
+      genId.textContent = id;
+      genName.textContent = name + " · S/D of " + father;
+      genBox.classList.add('show');
+      studentName.value = ''; studentFather.value = ''; studentMobile.value = '';
+      genderGroup.querySelectorAll('input').forEach(function(i){ i.checked = false; });
+      genderGroup.querySelectorAll('.gender-opt').forEach(function(o){ o.classList.remove('is-selected'); });
+      dobDay.value = ''; dobMonth.value = ''; dobYear.value = '';
+      showToast('Learner ID generated successfully');
+    }).catch(function(err){
+      btnReset(generateIdBtn, genBtnText, 'Generate Learner ID');
+      showToast('Failed to save: ' + (err.message || 'unknown'), true);
+    });
+  });
+
+  copyIdBtn.addEventListener('click', function(){
+    const id = genId.textContent;
+    if (!id) return;
+    const done = function(){ showToast('Learner ID copied to clipboard'); };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(id).then(done).catch(function(){ fallbackCopy(id); done(); });
+    } else { fallbackCopy(id); done(); }
+  });
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  /* ===================== STUDENTS ===================== */
+  function renderStudents(){
+    if (!firebaseReady.students){
+      studentsTableBody.innerHTML = spinRow(8, 'Loading students...');
+      return;
+    }
+    if (adminData.students.length === 0){
+      studentsTableBody.innerHTML =
+        '<tr class="empty-row"><td colspan="8">No students registered yet. Generate the first Learner ID above.</td></tr>';
+      return;
+    }
+    studentsTableBody.innerHTML = adminData.students.map(function(s){
+      const gBadge = s.gender === 'Male'
+        ? '<span class="badge male">Male</span>'
+        : '<span class="badge female">Female</span>';
+      return '' +
+        '<tr>' +
+          '<td class="id-cell">' + escapeHtml(s.id) + '</td>' +
+          '<td>' + escapeHtml(s.name) + '</td>' +
+          '<td>' + escapeHtml(s.father) + '</td>' +
+          '<td>' + gBadge + '</td>' +
+          '<td>' + escapeHtml(formatDob(s.dobDay, s.dobMonth, s.dobYear)) + '</td>' +
+          '<td>' + (s.mobile ? escapeHtml(s.mobile) : '—') + '</td>' +
+          '<td>' + formatDate(s.registeredAt) + '</td>' +
+          '<td>' +
+            '<div class="row-actions">' +
+              '<button class="icon-btn del" data-del-student="' + escapeHtml(s.id) + '" title="Delete">' +
+                '<svg viewBox="0 0 24 24" stroke="currentColor">' +
+                  '<polyline points="3 6 5 6 21 6"/>' +
+                  '<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>' +
+                  '<path d="M10 11v6M14 11v6"/>' +
+                '</svg>' +
+              '</button>' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  studentsTableBody.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-del-student]');
+    if (!btn) return;
+    const id = btn.getAttribute('data-del-student');
+    const s = adminData.students.find(function(x){ return x.id === id; });
+    if (!s) return;
+    openConfirm(
+      'Delete Student',
+      'Are you sure you want to permanently delete <strong>' + escapeHtml(s.name) +
+      '</strong> (ID: <strong>' + escapeHtml(s.id) + '</strong>)? This action cannot be undone.',
+      function(){
+        db.ref('students/' + id).remove().then(function(){ showToast('Student removed'); });
+      }
+    );
+  });
+
+  /* ===================== CONFIRM MODAL ===================== */
+  function openConfirm(title, html, onOk){
+    confirmTitle.textContent = title;
+    confirmText.innerHTML = html;
+    pendingDelete = onOk;
+    confirmModal.classList.add('open');
+  }
+  function closeConfirm(){ confirmModal.classList.remove('open'); pendingDelete = null; }
+  confirmCancel.addEventListener('click', closeConfirm);
+  confirmModal.addEventListener('click', function(e){
+    if (e.target === confirmModal) closeConfirm();
+  });
+  confirmOk.addEventListener('click', function(){
+    const fn = pendingDelete;
+    closeConfirm();
+    if (typeof fn === 'function') fn();
+  });
+
+  /* ===================== FONT UPLOAD ===================== */
+  let selectedFontLang = null;
+
+  fontLangGroup.addEventListener('change', function(e){
+    const input = e.target;
+    if (!input || input.name !== 'fontLang') return;
+    selectedFontLang = input.value;
+    fontLangGroup.querySelectorAll('.lang-choice').forEach(function(opt){
+      const i = opt.querySelector('input');
+      opt.classList.toggle('is-selected', i.checked);
+    });
+    fontFileStep.classList.add('show');
+    fontNameStep.classList.remove('show');
+    fontName.value = '';
+    fontFile.value = '';
+  });
+
+  fontFile.addEventListener('change', function(){
+    if (fontFile.files && fontFile.files[0]){
+      fontNameStep.classList.add('show');
+      setTimeout(function(){ fontName.focus(); }, 80);
+    } else {
+      fontNameStep.classList.remove('show');
+    }
+  });
+
+  uploadFontBtn.addEventListener('click', function(){
+    if (!selectedFontLang){ showToast('Please select a language first', true); return; }
+    const f = fontFile.files && fontFile.files[0];
+    if (!f){ showToast('Please select a font file', true); return; }
+    const displayName = fontName.value.trim();
+    if (displayName.length < 2){ showToast('Please enter a font name', true); fontName.focus(); return; }
+    const ext = f.name.split('.').pop().toLowerCase();
+    if (['ttf','otf','woff','woff2'].indexOf(ext) === -1){
+      showToast('Only TTF, OTF, WOFF or WOFF2 files are allowed', true); return;
+    }
+    if (f.size > 500 * 1024){
+      showToast('Font file must be 500 KB or smaller', true); return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const dataUrl = ev.target.result;
+      const family = 'TypingXFont_' + selectedFontLang;
+      const langToStore = selectedFontLang;
+
+      btnLoading(uploadFontBtn, uploadFontBtnText, 'Uploading...');
+      db.ref('fonts/' + langToStore).set({
+        displayName: displayName,
+        family: family,
+        fileName: f.name,
+        size: f.size,
+        dataUrl: dataUrl,
+        uploadedAt: Date.now()
+      }).then(function(){
+        btnReset(uploadFontBtn, uploadFontBtnText, 'Submit Font');
+        const ff = new FontFace(family, 'url(' + dataUrl + ')');
+        ff.load().then(function(loaded){
+          document.fonts.add(loaded);
+          loadedFontFamilies.add(family);
+          updateLiveFont();
+        }).catch(function(){});
+        resetFontUploadFlow();
+        showToast('Font uploaded to Firebase');
+      }).catch(function(err){
+        btnReset(uploadFontBtn, uploadFontBtnText, 'Submit Font');
+        showToast('Upload failed: ' + (err.message || 'unknown'), true);
+      });
+    };
+    reader.onerror = function(){ showToast('Failed to read the font file', true); };
+    reader.readAsDataURL(f);
+  });
+
+  function resetFontUploadFlow(){
+    fontLangGroup.querySelectorAll('input').forEach(function(i){ i.checked = false; });
+    fontLangGroup.querySelectorAll('.lang-choice').forEach(function(o){ o.classList.remove('is-selected'); });
+    selectedFontLang = null;
+    fontFileStep.classList.remove('show');
+    fontNameStep.classList.remove('show');
+    fontFile.value = '';
+    fontName.value = '';
+  }
+
+  function renderFonts(){
+    if (!firebaseReady.fonts){
+      fontsTableBody.innerHTML = spinRow(4, 'Loading fonts...');
+      return;
+    }
+    if (adminData.fonts.length === 0){
+      fontsTableBody.innerHTML = '<tr class="empty-row"><td colspan="4">No fonts uploaded yet.</td></tr>';
+      return;
+    }
+    fontsTableBody.innerHTML = adminData.fonts.map(function(f, i){
+      const langBadge = f.language === 'hindi'
+        ? '<span class="badge hindi">Hindi</span>'
+        : '<span class="badge english">English</span>';
+      return '' +
+        '<tr>' +
+          '<td>' + escapeHtml(f.displayName) + '</td>' +
+          '<td>' + langBadge + '</td>' +
+          '<td>' + formatDate(f.uploadedAt) + '</td>' +
+          '<td>' +
+            '<div class="row-actions">' +
+              '<button class="icon-btn del" data-del-font="' + i + '" title="Delete">' +
+                '<svg viewBox="0 0 24 24" stroke="currentColor">' +
+                  '<polyline points="3 6 5 6 21 6"/>' +
+                  '<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>' +
+                  '<path d="M10 11v6M14 11v6"/>' +
+                '</svg>' +
+              '</button>' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  fontsTableBody.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-del-font]');
+    if (!btn) return;
+    const idx = parseInt(btn.getAttribute('data-del-font'), 10);
+    const f = adminData.fonts[idx];
+    if (!f) return;
+    openConfirm(
+      'Delete Font',
+      'Are you sure you want to delete the font <strong>' + escapeHtml(f.displayName) +
+      '</strong> (' + (f.language === 'hindi' ? 'Hindi' : 'English') + ')?',
+      function(){
+        db.ref('fonts/' + f.language).remove().then(function(){
+          loadedFontFamilies.delete(f.family);
+          showToast('Font removed');
+        });
+      }
+    );
+  });
+
+  function getLatestFontForLang(lang){
+    return adminData.fonts.find(function(f){ return f.language === lang; }) || null;
+  }
+
+  /* ===================== TEST CONTENT — FILE ===================== */
+  uploadContentBtn.addEventListener('click', function(){
+    const title = fileTitle.value.trim();
+    const lang  = fileLang.value;
+    const f     = contentFile.files && contentFile.files[0];
+    const isFree = fileFreeTest.checked;
+
+    if (title.length < 2){ showToast('Please enter a test title', true); fileTitle.focus(); return; }
+    if (adminData.files.some(function(x){ return (x.title||'').toLowerCase() === title.toLowerCase(); })){
+      showToast('A test with this title already exists', true); fileTitle.focus(); return;
+    }
+    if (!f){ showToast('Please select a TXT file', true); return; }
+    if (!/\.txt$/i.test(f.name) && f.type !== 'text/plain'){
+      showToast('Only TXT files are allowed for test content', true); return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const text = String(ev.target.result || '').trim();
+      if (!text){ showToast('The selected TXT file is empty', true); return; }
+      const wordCount = text.split(/\s+/).filter(Boolean).length;
+
+      btnLoading(uploadContentBtn, uploadContentBtnText, 'Uploading...');
+      db.ref('files').push({
+        title: title, language: lang, source: 'File Upload',
+        fileName: f.name, size: f.size, words: wordCount,
+        content: text, freeTest: isFree, uploadedAt: Date.now()
+      }).then(function(){
+        btnReset(uploadContentBtn, uploadContentBtnText, 'Upload Test Content');
+        fileTitle.value = '';
+        contentFile.value = '';
+        fileFreeTest.checked = false;
+        showToast('Test content uploaded successfully');
+      }).catch(function(err){
+        btnReset(uploadContentBtn, uploadContentBtnText, 'Upload Test Content');
+        showToast('Upload failed: ' + (err.message || 'unknown'), true);
+      });
+    };
+    reader.onerror = function(){ showToast('Failed to read the selected file', true); };
+    reader.readAsText(f, 'UTF-8');
+  });
+
+  /* ===================== TEST CONTENT — LIVE ===================== */
+  function updateLiveFont(){
+    const lang = liveLang.value;
+    const font = getLatestFontForLang(lang);
+    if (font){
+      liveContent.style.fontFamily = '"' + font.family + '", Poppins, sans-serif';
+      liveFontHint.textContent = 'Rendering in "' + font.displayName + '" (' + (lang === 'hindi' ? 'Hindi' : 'English') + ')';
+      liveFontHint.classList.remove('warn');
+    } else {
+      liveContent.style.fontFamily = 'Poppins, sans-serif';
+      liveFontHint.textContent = 'No font uploaded for ' + (lang === 'hindi' ? 'Hindi' : 'English') + ' — using default.';
+      liveFontHint.classList.add('warn');
+    }
+    applyContextSettings();
+  }
+  function updateLiveWordCount(){
+    const text = liveContent.value.trim();
+    const count = text ? text.split(/\s+/).filter(Boolean).length : 0;
+    liveWordCount.textContent = count;
+  }
+
+  liveLang.addEventListener('change', updateLiveFont);
+  liveContent.addEventListener('input', updateLiveWordCount);
+  updateLiveFont();
+  updateLiveWordCount();
+
+  saveLiveBtn.addEventListener('click', function(){
+    const title = liveTitle.value.trim();
+    const lang  = liveLang.value;
+    const text  = liveContent.value.trim();
+    const isFree = liveFreeTest.checked;
+
+    if (title.length < 2){ showToast('Please enter a test title', true); liveTitle.focus(); return; }
+    if (adminData.files.some(function(x){ return (x.title||'').toLowerCase() === title.toLowerCase(); })){
+      showToast('A test with this title already exists', true); liveTitle.focus(); return;
+    }
+    if (!text){ showToast('Please write some content before saving', true); liveContent.focus(); return; }
+
+    const wordCount = text.split(/\s+/).filter(Boolean).length;
+
+    btnLoading(saveLiveBtn, saveLiveBtnText, 'Saving...');
+    db.ref('files').push({
+      title: title, language: lang, source: 'Written Live',
+      fileName: '—', size: text.length, words: wordCount,
+      content: text, freeTest: isFree, uploadedAt: Date.now()
+    }).then(function(){
+      btnReset(saveLiveBtn, saveLiveBtnText, 'Save Content');
+      liveTitle.value = '';
+      liveContent.value = '';
+      liveFreeTest.checked = false;
+      updateLiveWordCount();
+      showToast('Live content saved');
+    }).catch(function(err){
+      btnReset(saveLiveBtn, saveLiveBtnText, 'Save Content');
+      showToast('Save failed: ' + (err.message || 'unknown'), true);
+    });
+  });
+
+  /* ===================== MANAGE FILES ===================== */
+  function renderFiles(){
+    if (!firebaseReady.files){
+      filesTableBody.innerHTML = spinRow(7, 'Loading test files...');
+      return;
+    }
+    if (adminData.files.length === 0){
+      filesTableBody.innerHTML = '<tr class="empty-row"><td colspan="7">No test files uploaded yet.</td></tr>';
+      return;
+    }
+    filesTableBody.innerHTML = adminData.files.map(function(f, i){
+      const langBadge = f.language === 'hindi'
+        ? '<span class="badge hindi">Hindi</span>'
+        : '<span class="badge english">English</span>';
+      const freeBadge = f.freeTest
+        ? '<span class="badge free">Free</span>'
+        : '<span style="color:var(--muted)">—</span>';
+      return '' +
+        '<tr>' +
+          '<td>' + escapeHtml(f.title) + '</td>' +
+          '<td>' + langBadge + '</td>' +
+          '<td style="font-size:0.75rem;color:var(--muted)">' + escapeHtml(f.source) + '</td>' +
+          '<td>' + freeBadge + '</td>' +
+          '<td>' + f.words + '</td>' +
+          '<td>' + formatDate(f.uploadedAt) + '</td>' +
+          '<td>' +
+            '<div class="row-actions">' +
+              '<button class="icon-btn view" data-view-file="' + i + '" title="Preview">' +
+                '<svg viewBox="0 0 24 24" stroke="currentColor">' +
+                  '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>' +
+                  '<circle cx="12" cy="12" r="3"/>' +
+                '</svg>' +
+              '</button>' +
+              '<button class="icon-btn del" data-del-file="' + i + '" title="Delete">' +
+                '<svg viewBox="0 0 24 24" stroke="currentColor">' +
+                  '<polyline points="3 6 5 6 21 6"/>' +
+                  '<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>' +
+                  '<path d="M10 11v6M14 11v6"/>' +
+                '</svg>' +
+              '</button>' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  filesTableBody.addEventListener('click', function(e){
+    const delBtn = e.target.closest('[data-del-file]');
+    if (delBtn){
+      const idx = parseInt(delBtn.getAttribute('data-del-file'), 10);
+      const f = adminData.files[idx];
+      if (!f) return;
+      openConfirm(
+        'Delete Test File',
+        'Are you sure you want to delete <strong>' + escapeHtml(f.title) + '</strong>?',
+        function(){
+          db.ref('files/' + f._key).remove().then(function(){ showToast('Test file removed'); });
+        }
+      );
+      return;
+    }
+    const viewBtn = e.target.closest('[data-view-file]');
+    if (viewBtn){
+      const idx = parseInt(viewBtn.getAttribute('data-view-file'), 10);
+      const f = adminData.files[idx];
+      if (!f) return;
+      openPreview(f);
+    }
+  });
+
+  function openPreview(f){
+    previewTitleText.textContent = f.title + ' · ' + (f.language === 'hindi' ? 'Hindi' : 'English');
+    previewBody.textContent = f.content;
+    const font = getLatestFontForLang(f.language);
+    previewBody.style.fontFamily = font
+      ? '"' + font.family + '", Poppins, sans-serif'
+      : 'Poppins, sans-serif';
+    previewModal.classList.add('open');
+  }
+  function closePreview(){ previewModal.classList.remove('open'); }
+  previewClose.addEventListener('click', closePreview);
+  previewModal.addEventListener('click', function(e){
+    if (e.target === previewModal) closePreview();
+  });
+
+  /* ===================== QR UPLOAD ===================== */
+  qrFile.addEventListener('change', function(){
+    const f = qrFile.files && qrFile.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      qrPreview.src = ev.target.result;
+      qrPreview.classList.add('show');
+      qrPreviewEmpty.style.display = 'none';
+    };
+    reader.readAsDataURL(f);
+  });
+
+  uploadQrBtn.addEventListener('click', function(){
+    const f = qrFile.files && qrFile.files[0];
+    if (!f){
+      showToast('Please select a QR image first', true);
+      return;
+    }
+    const validTypes = ['image/png','image/jpeg','image/jpg','image/webp'];
+    if (validTypes.indexOf(f.type) === -1){
+      showToast('Only PNG, JPG, or WEBP images are allowed', true);
+      return;
+    }
+    if (f.size > 200 * 1024){
+      showToast('QR image must be 200 KB or smaller', true);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const dataUrl = ev.target.result;
+      btnLoading(uploadQrBtn, uploadQrBtnText, 'Uploading...');
+      db.ref('qrCode').set({
+        dataUrl: dataUrl,
+        fileName: f.name,
+        size: f.size,
+        uploadedAt: Date.now()
+      }).then(function(){
+        btnReset(uploadQrBtn, uploadQrBtnText, 'Upload QR Code');
+        qrFile.value = '';
+        showToast('QR code uploaded successfully');
+      }).catch(function(err){
+        btnReset(uploadQrBtn, uploadQrBtnText, 'Upload QR Code');
+        showToast('Upload failed: ' + (err.message || 'unknown'), true);
+      });
+    };
+    reader.onerror = function(){ showToast('Failed to read the QR file', true); };
+    reader.readAsDataURL(f);
+  });
+
+  resetQrBtn.addEventListener('click', function(){
+    openConfirm(
+      'Reset QR Code',
+      'Are you sure you want to remove the uploaded QR and revert to the default placeholder?',
+      function(){
+        db.ref('qrCode').remove().then(function(){
+          qrFile.value = '';
+          showToast('QR code reset to default');
+        });
+      }
+    );
+  });
+
+  /* ===================== DISPLAY SETTINGS ===================== */
+  applySettingsBtn.addEventListener('click', function(){
+    const hFs = parseFloat(hindiFontSize.value);
+    const hLh = parseFloat(hindiLineHeight.value);
+    const eFs = parseFloat(englishFontSize.value);
+    const eLh = parseFloat(englishLineHeight.value);
+
+    if (isNaN(hFs) || hFs < 0.8 || hFs > 3){ showToast('Hindi font size must be 0.8–3.0', true); hindiFontSize.focus(); return; }
+    if (isNaN(hLh) || hLh < 1 || hLh > 3){ showToast('Hindi line height must be 1.0–3.0', true); hindiLineHeight.focus(); return; }
+    if (isNaN(eFs) || eFs < 0.8 || eFs > 3){ showToast('English font size must be 0.8–3.0', true); englishFontSize.focus(); return; }
+    if (isNaN(eLh) || eLh < 1 || eLh > 3){ showToast('English line height must be 1.0–3.0', true); englishLineHeight.focus(); return; }
+
+    btnLoading(applySettingsBtn, applySettingsBtnText, 'Saving...');
+    db.ref('displaySettings').set({
+      hindi:   { fontSize: hFs, lineHeight: hLh },
+      english: { fontSize: eFs, lineHeight: eLh }
+    }).then(function(){
+      btnReset(applySettingsBtn, applySettingsBtnText, 'Save Settings');
+      showToast('Display settings saved to Firebase');
+    }).catch(function(err){
+      btnReset(applySettingsBtn, applySettingsBtnText, 'Save Settings');
+      showToast('Save failed: ' + (err.message || 'unknown'), true);
+    });
+  });
+
+  resetSettingsBtn.addEventListener('click', function(){
+    hindiFontSize.value = '1.4'; hindiLineHeight.value = '1.5';
+    englishFontSize.value = '1.4'; englishLineHeight.value = '1.5';
+    db.ref('displaySettings').set({
+      hindi:   { fontSize: 1.4, lineHeight: 1.5 },
+      english: { fontSize: 1.4, lineHeight: 1.5 }
+    }).then(function(){ showToast('Display settings reset'); });
+  });
+
+  /* ===================== LEARNER SIGN-IN ===================== */
+  function resetStep2(){
+    state.selectedLanguage = null;
+    const checked = langGrid.querySelector('input[name="language"]:checked');
+    if (checked) checked.checked = false;
+    langGrid.querySelectorAll('.lang-option').forEach(function(o){ o.classList.remove('is-selected'); });
+    step2.classList.add('is-locked');
+    updateNextBtn();
+  }
+  function showVerifyError(text){
+    verifyMsg.innerHTML = '<span class="tick">!</span><span>' + escapeHtml(text) + '</span>';
+    verifyMsg.classList.add('show', 'err');
+  }
+  function clearVerifyMsg(){
+    verifyMsg.innerHTML = '';
+    verifyMsg.classList.remove('show','err');
+  }
+
+  function verifyLearner(){
+    const raw = learnerIdInput.value.trim().toUpperCase();
+    if (raw.length !== 8){
+      clearVerified(); clearVerifyMsg();
+      showVerifyError('Learner ID must be exactly 8 characters long.');
+      return;
+    }
+    if (!firebaseReady.students){
+      btnLoading(verifyBtn, verifyBtnText, 'Verifying...');
+      var tries = 0;
+      var maxTries = 30;
+      var iv = setInterval(function(){
+        tries++;
+        if (firebaseReady.students || tries >= maxTries){
+          clearInterval(iv);
+          btnReset(verifyBtn, verifyBtnText, 'Verify');
+          doVerify(raw);
+        }
+      }, 100);
+      return;
+    }
+    doVerify(raw);
+  }
+
+  function doVerify(raw){
+    const found = findLearnerById(raw);
+    if (!found){
+      clearVerified(); clearVerifyMsg();
+      showVerifyError('Learner ID not found. Please check and try again.');
+      return;
+    }
+    state.verifiedId = raw;
+    state.verifiedName = found.name;
+    clearVerifyMsg();
+    welcomeName.textContent = state.verifiedName;
+    welcomeLine.classList.add('show');
+    step2.classList.remove('is-locked');
+    updateNextBtn();
+  }
+
+  function clearVerified(){
+    state.verifiedId = null; state.verifiedName = null;
+    welcomeLine.classList.remove('show');
+    resetStep2(); updateNextBtn();
+  }
+
+  verifyBtn.addEventListener('click', verifyLearner);
+  learnerIdInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); verifyLearner(); }
+  });
+  learnerIdInput.addEventListener('input', function(){
+    this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    const current = this.value.trim().toUpperCase();
+    if (state.verifiedId && current !== state.verifiedId){
+      clearVerified(); clearVerifyMsg();
+    }
+  });
+
+  langGrid.addEventListener('change', function(e){
+    const target = e.target;
+    if (!target || target.name !== 'language') return;
+    langGrid.querySelectorAll('.lang-option').forEach(function(opt){
+      const input = opt.querySelector('input');
+      opt.classList.toggle('is-selected', input.checked);
+    });
+    state.selectedLanguage = target.value;
+    updateNextBtn();
+  });
+
+  function updateNextBtn(){
+    nextBtn.disabled = !(state.verifiedId && state.selectedLanguage);
+  }
+
+  nextBtn.addEventListener('click', function(){
+    if (nextBtn.disabled) return;
+    state.testListMode = 'language';
+    renderTestList(state.selectedLanguage, 'language');
+    showScreen(testListScreen);
+  });
+
+  freeTestBtn.addEventListener('click', function(){
+    state.testListMode = 'free';
+    renderTestList(null, 'free');
+    showScreen(testListScreen);
+  });
+
+  listBackBtn.addEventListener('click', function(){ showScreen(homeScreen); });
+
+  /* ===================== TEST LIST ===================== */
+  function renderTestList(lang, mode){
+    if (!firebaseReady.files){
+      if (mode === 'free'){
+        testListTitle.textContent = 'Free Tests';
+        testListSub.textContent = 'Free typing tests — no Learner ID required.';
+      } else {
+        const langLabel = lang === 'hindi' ? 'Hindi' : 'English';
+        testListTitle.textContent = langLabel + ' Tests';
+        testListSub.textContent = 'Select a test to begin your typing assessment.';
+      }
+      testListBody.innerHTML = spinRow(8, 'Loading tests...');
+      return;
+    }
+
+    let tests;
+    if (mode === 'free'){
+      tests = adminData.files.filter(function(f){ return f.freeTest; });
+      testListTitle.textContent = 'Free Tests';
+      testListSub.textContent = 'Free typing tests — no Learner ID required.';
+    } else {
+      const langLabel = lang === 'hindi' ? 'Hindi' : 'English';
+      tests = adminData.files.filter(function(f){ return f.language === lang; });
+      testListTitle.textContent = langLabel + ' Tests';
+      testListSub.textContent = 'Select a test to begin your typing assessment.';
+    }
+
+    if (tests.length === 0){
+      testListBody.innerHTML = '<tr class="empty-row"><td colspan="8">No tests available in this category yet.</td></tr>';
+      return;
+    }
+
+    testListBody.innerHTML = tests.map(function(t, i){
+      const origIndex = adminData.files.indexOf(t);
+      const langBadge = t.language === 'hindi'
+        ? '<span class="badge hindi">Hindi</span>'
+        : '<span class="badge english">English</span>';
+      const totalWords = (t.language === 'hindi' ? 400 : 500) + ' words';
+      return '' +
+        '<tr>' +
+          '<td class="sno">' + (i + 1) + '</td>' +
+          '<td class="title-cell">' + escapeHtml(t.title) + '</td>' +
+          '<td>' + langBadge + '</td>' +
+          '<td>' + totalWords + '</td>' +
+          '<td>' + TEST_DURATION_LABEL + '</td>' +
+          '<td>' + TEST_MAX_MARKS + '</td>' +
+          '<td>' + formatDate(t.uploadedAt) + '</td>' +
+          '<td>' +
+            '<button class="start-btn-row" data-start-test="' + origIndex + '" type="button">' +
+              '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20"/></svg>' +
+              '<span>Start</span>' +
+            '</button>' +
+          '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  testListBody.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-start-test]');
+    if (!btn) return;
+    const idx = parseInt(btn.getAttribute('data-start-test'), 10);
+    const t = adminData.files[idx];
+    if (!t) return;
+    startTypingTest(t);
+  });
+
+  /* ===================== BACKSPACE MODE ===================== */
+  bsModeGroup.addEventListener('change', function(e){
+    const input = e.target;
+    if (!input || input.name !== 'bsmode') return;
+    if (state.typingStarted){ input.checked = false; return; }
+    state.backspaceMode = input.value;
+  });
+  function lockBackspaceMode(){
+    bsModeGroup.querySelectorAll('.bs-mode').forEach(function(o){ o.classList.add('is-disabled'); });
+  }
+  function unlockBackspaceMode(){
+    bsModeGroup.querySelectorAll('.bs-mode').forEach(function(o){ o.classList.remove('is-disabled'); });
+  }
+  function resetBackspaceMode(){
+    state.backspaceMode = 'current';
+    const checked = bsModeGroup.querySelector('input[value="current"]');
+    if (checked) checked.checked = true;
+    unlockBackspaceMode();
+  }
+
+  /* ===================== TYPING INTERFACE ===================== */
+  function startTypingTest(test){
+    state.currentTest = test;
+    state.typingStarted = false;
+
+    const padded = getPaddedContent(test.content, test.language);
+    state.currentPassage = padded;
+
+    const isFreeTest = state.testListMode === 'free';
+    if (isFreeTest || !state.verifiedId){
+      tbUserName.textContent = 'Guest User';
+      tbUserId.textContent = 'GUEST';
+      tbUserId.classList.add('guest');
+    } else {
+      tbUserName.textContent = state.verifiedName || 'Learner';
+      tbUserId.textContent = state.verifiedId;
+      tbUserId.classList.remove('guest');
+    }
+
+    const font = getLatestFontForLang(test.language);
+    if (font){
+      document.documentElement.style.setProperty('--test-font', '"' + font.family + '", Poppins, sans-serif');
+      tbFontName.textContent = font.displayName;
+      tbFontInfo.classList.remove('no-font');
+    } else {
+      document.documentElement.style.setProperty('--test-font', 'Poppins, sans-serif');
+      tbFontName.textContent = 'Poppins (default)';
+      tbFontInfo.classList.add('no-font');
+    }
+
+    tbPassage.textContent = padded;
+    tbInput.value = '';
+    tbInput.scrollTop = 0;
+
+    applySettingsForLang(test.language);
+    state.typingFontSize = displaySettings[test.language].fontSize;
+    updateFsDisplay();
+
+    tbFullscreenBtn.disabled = false;
+    updateFsLabel();
+
+    resetBackspaceMode();
+    stopTimer();
+    timeRemaining = TEST_DURATION_SECONDS;
+    updateTimerDisplay();
+
+    try { history.pushState({ screen: 'typing' }, '', location.href); } catch(e){}
+
+    showScreen(typingScreen);
+    setTimeout(function(){ tbInput.focus(); }, 120);
+  }
+
+  function updateFsDisplay(){
+    document.documentElement.style.setProperty('--typing-fs', state.typingFontSize + 'rem');
+    const approxPx = Math.round(state.typingFontSize * 16);
+    fsDisplay.textContent = approxPx;
+  }
+
+  fsDecBtn.addEventListener('click', function(){
+    state.typingFontSize = Math.max(0.9, Math.round((state.typingFontSize - 0.1) * 10) / 10);
+    updateFsDisplay();
+  });
+  fsIncBtn.addEventListener('click', function(){
+    state.typingFontSize = Math.min(2.6, Math.round((state.typingFontSize + 0.1) * 10) / 10);
+    updateFsDisplay();
+  });
+
+  /* ===================== TIMER + BEEP ===================== */
+  let beepPlayed = false;
+  function playBeep(){
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.35, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.5);
+    } catch(e){}
+  }
+
+  function updateTimerDisplay(){
+    const m = Math.floor(timeRemaining / 60);
+    const s = timeRemaining % 60;
+    timerValue.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    timerValue.classList.toggle('warn', timeRemaining <= 60);
+    if (timeRemaining === 60 && !beepPlayed){
+      beepPlayed = true;
+      playBeep();
+    }
+  }
+  function startTimer(){
+    stopTimer();
+    beepPlayed = false;
+    timerInterval = setInterval(function(){
+      timeRemaining--;
+      if (timeRemaining <= 0){
+        timeRemaining = 0;
+        updateTimerDisplay();
+        stopTimer();
+        finalizeSubmit(true);
+        return;
+      }
+      updateTimerDisplay();
+    }, 1000);
+  }
+  function stopTimer(){
+    if (timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  /* ===================== FULLSCREEN ===================== */
+  function updateFsLabel(){
+    tbFsLabel.textContent = document.fullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+  }
+  tbFullscreenBtn.addEventListener('click', function(){
+    if (document.fullscreenElement){
+      try { document.exitFullscreen(); } catch(e){}
+      return;
+    }
+    if (state.typingStarted){
+      showToast('Cannot enter fullscreen after the test has started', true);
+      return;
+    }
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (req){
+      const p = req.call(el);
+      if (p && typeof p.catch === 'function') p.catch(function(){});
+    }
+  });
+  document.addEventListener('fullscreenchange', updateFsLabel);
+
+  /* ===================== TYPING RESTRICTIONS ===================== */
+  tbInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.keyCode === 13){ e.preventDefault(); return; }
+    if (e.key === 'Delete'){ e.preventDefault(); return; }
+    if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 'a'){
+      e.preventDefault(); return;
+    }
+    const navKeys = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'];
+    if (navKeys.indexOf(e.key) !== -1){ e.preventDefault(); return; }
+    if (e.key === 'Tab'){ e.preventDefault(); return; }
+
+    if (e.key === 'Backspace'){
+      if (state.backspaceMode === 'disabled'){ e.preventDefault(); return; }
+      if (state.backspaceMode === 'current'){
+        const val = tbInput.value;
+        const pos = tbInput.selectionStart;
+        let wordStart = 0;
+        for (let i = pos - 1; i >= 0; i--){
+          if (val[i] === ' ' || val[i] === '\n' || val[i] === '\t'){
+            wordStart = i + 1;
+            break;
+          }
+        }
+        if (pos <= wordStart){ e.preventDefault(); return; }
+      }
+    }
+  });
+
+  tbInput.addEventListener('select', function(){
+    const len = tbInput.value.length;
+    if (tbInput.selectionStart !== len || tbInput.selectionEnd !== len){
+      try { tbInput.setSelectionRange(len, len); } catch(e){}
+    }
+  });
+  tbInput.addEventListener('click', function(){
+    const len = tbInput.value.length;
+    try { tbInput.setSelectionRange(len, len); } catch(e){}
+  });
+
+  tbInput.addEventListener('paste', function(e){ e.preventDefault(); showToast('Pasting is not allowed during the test', true); });
+  tbInput.addEventListener('copy', function(e){ e.preventDefault(); });
+  tbInput.addEventListener('cut', function(e){ e.preventDefault(); });
+  tbInput.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  tbInput.addEventListener('drop', function(e){ e.preventDefault(); });
+
+  tbInput.addEventListener('mousedown', function(e){
+    if (e.button === 1){ e.preventDefault(); return false; }
+  });
+  tbInput.addEventListener('auxclick', function(e){
+    if (e.button === 1){ e.preventDefault(); }
+  });
+
+  tbInput.addEventListener('input', function(){
+    if (!state.typingStarted && tbInput.value.length > 0){
+      state.typingStarted = true;
+      tbFullscreenBtn.disabled = true;
+      lockBackspaceMode();
+      startTimer();
+    }
+    tbInput.scrollTop = tbInput.scrollHeight;
+  });
+
+  /* ===================== SUBMIT ===================== */
+  tbSubmitBtn.addEventListener('click', function(){
+    submitConfirmModal.classList.add('open');
+  });
+  function closeSubmitConfirm(){ submitConfirmModal.classList.remove('open'); }
+  submitCancel.addEventListener('click', closeSubmitConfirm);
+  submitConfirmModal.addEventListener('click', function(e){
+    if (e.target === submitConfirmModal) closeSubmitConfirm();
+  });
+  submitOk.addEventListener('click', function(){
+    closeSubmitConfirm();
+    finalizeSubmit(false);
+  });
+
+  /* ============ SMART REALIGN ============ */
+  function smartCompare(passageWords, typedWords){
+    const results = [];
+    let correct = 0, missed = 0, wrong = 0;
+    let p = 0, t = 0;
+    const pMax = passageWords.length;
+    const tMax = typedWords.length;
+
+    while (t < tMax && p < pMax){
+      const typedW = typedWords[t];
+      if (typedW === passageWords[p]){
+        results.push({ type: 'correct', typedWord: typedW, expectedWord: passageWords[p] });
+        correct++; t++; p++;
+        continue;
+      }
+      let skip = -1;
+      for (let k = 1; k <= 2; k++){
+        if (p + k < pMax && typedW === passageWords[p + k]){ skip = k; break; }
+      }
+      if (skip > 0){
+        for (let m = 0; m < skip; m++){
+          results.push({ type: 'missed', typedWord: null, expectedWord: passageWords[p + m] });
+          missed++;
+        }
+        results.push({ type: 'correct', typedWord: typedW, expectedWord: passageWords[p + skip] });
+        correct++;
+        p += skip + 1; t++;
+        continue;
+      }
+      results.push({ type: 'wrong', typedWord: typedW, expectedWord: passageWords[p] });
+      wrong++; t++; p++;
+    }
+    while (t < tMax){
+      results.push({ type: 'wrong', typedWord: typedWords[t], expectedWord: null });
+      wrong++; t++;
+    }
+    while (p < pMax){
+      results.push({ type: 'missed', typedWord: null, expectedWord: passageWords[p] });
+      missed++; p++;
+    }
+    return { results, correct, missed, wrong };
+  }
+
+  function finalizeSubmit(timeUp){
+    stopTimer();
+    const typed = tbInput.value;
+    const passageWords = state.currentPassage.trim().split(/\s+/).filter(Boolean);
+    const typedWords = typed.trim() ? typed.trim().split(/\s+/).filter(Boolean) : [];
+    const total = passageWords.length;
+
+    const cmp = smartCompare(passageWords, typedWords);
+    const correct = cmp.correct;
+    const marks = total > 0 ? Math.round((correct / total) * TEST_MAX_MARKS * 100) / 100 : 0;
+
+    if (document.fullscreenElement){ try { document.exitFullscreen(); } catch(e){} }
+
+    const isFreeTest = state.testListMode === 'free';
+    rrStudentName.textContent = (isFreeTest || !state.verifiedId) ? 'Guest User' : (state.verifiedName || 'Learner');
+    rrLearnerId.textContent = (isFreeTest || !state.verifiedId) ? 'GUEST' : state.verifiedId;
+    rrTestName.textContent = state.currentTest ? state.currentTest.title : '—';
+    rrLang.textContent = state.currentTest ? (state.currentTest.language === 'hindi' ? 'Hindi' : 'English') : '—';
+    rrTotal.textContent = total;
+    rrTyped.textContent = typedWords.length;
+    rrCorrect.textContent = correct;
+    rrMarks.textContent = marks;
+
+    let html = '';
+    cmp.results.forEach(function(r){
+      if (r.type === 'missed'){
+        html += '<span class="cw missed">' + escapeHtml(r.expectedWord || '—') + '</span> ';
+      } else if (r.type === 'correct'){
+        html += '<span class="cw correct">' + escapeHtml(r.typedWord) + '</span> ';
+      } else {
+        const typedTxt = r.typedWord != null ? escapeHtml(r.typedWord) : '';
+        const expectedTxt = r.expectedWord != null ? escapeHtml(r.expectedWord) : '—';
+        html += '<span class="cw wrong">' +
+                  typedTxt +
+                  '<span class="cw-arrow">→</span>' +
+                  '<span class="cw-good">' + expectedTxt + '</span>' +
+                '</span> ';
+      }
+    });
+    rrComparison.innerHTML = html;
+
+    if (timeUp) showToast('Time is up — test submitted automatically', true);
+
+    state.typingStarted = false;
+    tbInput.value = '';
+    unlockBackspaceMode();
+
+    if (state.currentTest){
+      applySettingsForLang(state.currentTest.language);
+    }
+
+    showScreen(resultScreen);
+  }
+
+  rrHomeBtn.addEventListener('click', function(){
+    state.currentTest = null; state.currentPassage = '';
+    showScreen(homeScreen);
+    applyContextSettings();
+  });
+  rrTestListBtn.addEventListener('click', function(){
+    state.currentTest = null; state.currentPassage = '';
+    if (state.testListMode === 'free'){
+      renderTestList(null, 'free');
+    } else {
+      renderTestList(state.selectedLanguage, 'language');
+    }
+    showScreen(testListScreen);
+    applyContextSettings();
+  });
+
+  resultScreen.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  resultScreen.addEventListener('copy', function(e){ e.preventDefault(); });
+  resultScreen.addEventListener('cut', function(e){ e.preventDefault(); });
+
+  /* ===================== BOOT ===================== */
+  syncSettingsInputs();
+  applySettingsForLang('english');
+
+  applyQrToFooters(null);
+
+  if (db){ startFirebaseSync(); }
+
+  console.log('%cTypingX PRO — Firebase ready', 'color:#0284c7;font-weight:bold;font-size:14px;');
+
+})();
+</script>
+
+</body>
+</html>
